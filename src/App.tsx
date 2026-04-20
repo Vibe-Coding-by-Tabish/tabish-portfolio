@@ -3,6 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Hero from './components/Hero';
 import Header from './components/Header';
 import Projects from './components/Projects';
+import Timeline from './components/Timeline';
+import Contact from './components/Contact';
+import Footer from './components/Footer';
 import ResumeViewer from './components/ResumeViewer';
 
 type Page = 'home' | 'resume';
@@ -51,6 +54,9 @@ export default function App() {
           <div style={{ paddingTop: 64 }}>
             <Hero />
             <Projects />
+            <Timeline />
+            <Contact />
+            <Footer onViewResume={() => navigate('resume')} />
           </div>
         </motion.div>
       )}
