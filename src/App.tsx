@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Hero from './components/Hero';
+import Header from './components/Header';
+import Projects from './components/Projects';
 import ResumeViewer from './components/ResumeViewer';
 
 type Page = 'home' | 'resume';
@@ -41,12 +43,16 @@ export default function App() {
           onToggleTheme={toggleTheme}
         />
       ) : (
-        <Hero
+        <motion.div
           key="home"
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          onViewResume={() => navigate('resume')}
-        />
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+        >
+          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} />
+          <div style={{ paddingTop: 64 }}>
+            <Hero />
+            <Projects />
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

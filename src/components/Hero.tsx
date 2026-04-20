@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, type Variants, useReducedMotion } from 'framer-motion';
-
-interface HeroProps {
-  theme: 'light' | 'dark';
-  onToggleTheme: () => void;
-  onViewResume: () => void;
-}
+import { FaLinkedin, FaGithub, FaYoutube } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
 // ── Animation Variants ────────────────────────────────────────
 
@@ -83,7 +79,7 @@ const HIGHLIGHTS = [
 
 // ── Component ─────────────────────────────────────────────────
 
-export default function Hero({ theme, onToggleTheme, onViewResume }: HeroProps) {
+export default function Hero() {
   const prefersReducedMotion = useReducedMotion();
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -110,10 +106,7 @@ export default function Hero({ theme, onToggleTheme, onViewResume }: HeroProps) 
   };
 
   return (
-    <motion.main
-      className="hero"
-      exit={{ opacity: 0, transition: { duration: 0.15 } }}
-    >
+    <motion.main className="hero">
       {/* Ambient background accent */}
       {!prefersReducedMotion && (
         <motion.div
@@ -123,20 +116,6 @@ export default function Hero({ theme, onToggleTheme, onViewResume }: HeroProps) 
           aria-hidden="true"
         />
       )}
-
-      {/* Nav */}
-      <nav className="hero-nav">
-        <motion.button
-          className="theme-toggle"
-          onClick={onToggleTheme}
-          aria-label="Toggle theme"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.85, duration: 0.4 }}
-        >
-          {theme === 'light' ? '◐ Dark' : '◑ Light'}
-        </motion.button>
-      </nav>
 
       {/* Two-column layout */}
       <div className="hero-content">
@@ -184,14 +163,28 @@ export default function Hero({ theme, onToggleTheme, onViewResume }: HeroProps) 
             >
               View Projects
             </motion.a>
-            <motion.button
-              className="btn btn-outline"
-              onClick={onViewResume}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              Resume
-            </motion.button>
+
+            <div className="hero-social">
+              {[
+                { href: 'https://linkedin.com/in/tabishaliansari', icon: <FaLinkedin />, label: 'LinkedIn' },
+                { href: 'https://github.com/tabishaliansari',      icon: <FaGithub />,   label: 'GitHub'   },
+                { href: 'https://x.com/tabish_ali004',           icon: <FaXTwitter />, label: 'X'        },
+                { href: 'https://youtube.com/@teammavericks-00',    icon: <FaYoutube />,  label: 'YouTube'  },
+              ].map(({ href, icon, label }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon-btn"
+                  aria-label={label}
+                  whileHover={{ scale: 1.12 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {icon}
+                </motion.a>
+              ))}
+            </div>
           </motion.div>
         </motion.div>
 
