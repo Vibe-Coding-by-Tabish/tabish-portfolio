@@ -41,7 +41,7 @@ const ROWS: { left: Entry; right: Entry }[] = [
   },
   {
     left: {
-      period: '2019 – 20202',
+      period: '2019 – 2020',
       title: 'Secondary School - 10th Grade',
       subtitle: 'Sinhgad City School',
       detail: 'CBSE - 96% · Mathematics All India Top 0.1%',

@@ -283,17 +283,6 @@ body {
   will-change: transform;
 }
 
-.hero-nav {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 28px 0;
-  max-width: 1060px;
-  width: 100%;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
 
 .theme-toggle {
   display: inline-flex;
@@ -578,6 +567,7 @@ body {
 /* ── Projects Section ───────────────────────────────────────── */
 
 #projects,
+#about,
 #contact {
   scroll-margin-top: 72px;
 }
@@ -1120,9 +1110,6 @@ body {
     align-self: center;
   }
 
-  .hero-nav {
-    padding: 20px 0;
-  }
 
   /* Projects / Timeline / Contact / Footer: adjust padding on tablet/mobile */
   .projects,

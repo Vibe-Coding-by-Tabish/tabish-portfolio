@@ -117,6 +117,12 @@ export default function Header({ theme, onToggleTheme, onViewResume }: HeaderPro
               <button className="mobile-nav-link" onClick={handleResume}>
                 Resume
               </button>
+              <button
+                className="mobile-nav-link mobile-theme-toggle"
+                onClick={() => { setMobileOpen(false); onToggleTheme(); }}
+              >
+                {theme === 'light' ? '◐ Dark mode' : '◑ Light mode'}
+              </button>
             </div>
           </motion.div>
         )}
