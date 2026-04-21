@@ -190,7 +190,6 @@ export default function Projects() {
               <motion.div
                 className="project-image"
                 variants={imageVariants}
-                whileHover={{ scale: 1.03, transition: { duration: 0.25 } }}
               >
                 <img src={project.image} alt={project.title} />
               </motion.div>
