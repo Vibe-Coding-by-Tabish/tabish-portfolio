@@ -68,38 +68,43 @@ interface Project {
   image: string;
   github?: string;
   live?: string;
+  youtube?: string;
 }
 
-// Replace placeholder text and links with your actual project details
 const PROJECTS: Project[] = [
   {
-    id: 'intel-ai-hackathon',
+    id: 'adapt',
     num: '01',
-    title: 'Intel AI Hackathon — IIT KGP',
+    title: 'ADAPT: Alzheimer\'s Disease Prediction System',
     description:
-      'Top 10 All India at IEEE Indicon 2024, IIT Kharagpur. Built [brief description of what the project does]. [Add 1–2 sentences about the problem, approach, and outcome.]',
-    tech: ['Python', 'FastAPI', 'Machine Learning', 'Intel OpenVINO'],
-    image: '/images/iit_kgp_hoodie.png',
-    github: 'https://github.com',
+      'End-to-end deep learning system for MRI-based Alzheimer\'s classification. Built a VGG-19 pipeline with a FastAPI backend and React frontend, enabling real-time inference. Deployed across cloud platforms for accessible diagnosis workflows.',
+    tech: ['Python', 'VGG-19', 'FastAPI', 'React', 'MLOps', 'GitHub Actions'],
+    image: '/projects/adapt.png',
+    github: 'https://github.com/DA-workshop-101/Alzheimer-Stages-Classification-using-Deep-Learning',
+    live: 'https://adapt-webapp-007.netlify.app/',
+    youtube: 'https://www.youtube.com/watch?v=U3JPrEf1Syo'
   },
   {
-    id: 'nonstop-product',
+    id: 'metaboliq',
     num: '02',
-    title: 'End-to-End Product @ NonStop io',
+    title: 'MetaboliQ AI: Diabetes Risk Prediction',
     description:
-      'Shipped 5 PoCs and currently leading a product end-to-end — from architecture to deployment. [Describe what the product does, your key contributions, and the technical challenges solved.]',
-    tech: ['Node.js', 'PostgreSQL', 'Kafka', 'Docker', 'TypeScript'],
-    image: '/images/kafka.gif',
-    live: 'https://nonstopio.com',
+      'ML platform for diabetes risk classification achieving 83% accuracy. Designed the full pipeline from preprocessing to evaluation. Top 10 Finalist at the Intel AI Hackathon, IEEE INDICON, IIT Kharagpur.',
+    tech: ['Python', 'Scikit-learn', 'Flask', 'Machine Learning', 'Model Deployment'],
+    image: '/projects/metaboliq.png',
+    github: 'https://github.com/tabishaliansari/MetaboliQ-AI',
+    youtube: 'https://www.youtube.com/watch?v=sxvw4tzdTpY'
   },
   {
-    id: 'data-analytics',
+    id: 'power-forecast',
     num: '03',
-    title: 'Data Analytics Case — ISB&M Pune',
+    title: 'Power Consumption Forecasting',
     description:
-      '1st Runner-Up at the Data Analytics Case Competition 2024. Analyzed [dataset/business problem] to surface [key insight or recommendation]. [Add methodology and impact.]',
-    tech: ['Python', 'Pandas', 'SQL', 'Tableau'],
-    image: '/images/isbnm.jpeg',
+      'Time-series forecasting system on real-world electrical consumption data. SARIMAX models achieved an RMSE of 1.35; also explored LSTM for temporal pattern learning. Emphasis on feature engineering and trend decomposition.',
+    tech: ['Python', 'SARIMAX', 'Time Series Analysis', 'Databricks', 'Supabase'],
+    image: '/projects/power.png',
+    github: 'https://github.com/orgs/Power-Consumption-org/repositories',
+    youtube: 'https://www.youtube.com/watch?v=3m64id9M-rU'
   },
 ];
 
@@ -166,6 +171,16 @@ export default function Projects() {
                       className="project-link"
                     >
                       Live ↗
+                    </a>
+                  )}
+                  {project.youtube && (
+                    <a
+                      href={project.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="project-link"
+                    >
+                      YouTube ↗
                     </a>
                   )}
                 </div>

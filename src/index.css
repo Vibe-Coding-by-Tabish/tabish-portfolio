@@ -697,11 +697,25 @@ body {
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--border);
-  height: 300px;
+  height: 340px;
   cursor: pointer;
-  /* CSS shadow transitions on hover complement Framer Motion scale */
+  position: relative;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.3s ease;
+}
+
+/* Fade the bottom edge so the crop feels intentional */
+.project-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  pointer-events: none;
 }
 
 .project-image:hover {
@@ -712,6 +726,14 @@ body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
+[data-theme='dark'] .project-image::after {
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+}
+
 [data-theme='dark'] .project-image:hover {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
 }
@@ -720,6 +742,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
   display: block;
   user-select: none;
   pointer-events: none;
@@ -1130,7 +1153,7 @@ body {
 
   /* Image always below text on narrow viewports */
   .project-image {
-    height: 240px;
+    height: 260px;
   }
 }
 
