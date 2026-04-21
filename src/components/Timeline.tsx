@@ -13,44 +13,44 @@ interface Entry {
 const ROWS: { left: Entry; right: Entry }[] = [
   {
     left: {
-      period: '2021 – 2025',
-      title: 'B.Tech Computer Science',
-      subtitle: 'University Name',
+      period: 'September 2022 – June 2026',
+      title: 'B.Tech in Artificial Intelligence & Data Science',
+      subtitle: 'AISSMS Institute of Information Technology',
       detail: 'Relevant coursework · GPA x.x / 10',
     },
     right: {
-      period: '2023 – Present',
-      title: 'Software Engineer',
+      period: 'Feb 2025 – Present',
+      title: 'Software Development Engineer',
       subtitle: 'Company Name',
       detail: 'Shipped 5 PoCs · leading product end-to-end',
     },
   },
   {
     left: {
-      period: '2019 – 2021',
-      title: 'Higher Secondary',
-      subtitle: 'School Name',
-      detail: 'Science stream · XX%',
+      period: 'Aug 2020 – June 2022',
+      title: 'Higher Secondary Education',
+      subtitle: 'Sinhgad City School',
+      detail: 'Science - PCM · 92%',
     },
     right: {
-      period: '2023 – 2024',
+      period: '2023 – Present',
       title: 'Hackathons',
       subtitle: 'Multiple competitions',
-      detail: 'Top 10 All India · Intel AI @ IIT KGP',
+      detail: 'Top 10 All India · Intel AI @ IIT KGP · 2nd @ ISB&M Pune',
     },
   },
   {
     left: {
-      period: '2017 – 2019',
-      title: 'Secondary School',
-      subtitle: 'School Name',
-      detail: 'XX%',
+      period: '2019 – 20202',
+      title: 'Secondary School - 10th Grade',
+      subtitle: 'Sinhgad City School',
+      detail: 'CBSE - 96% · Mathematics All India Top 0.1%',
     },
     right: {
-      period: '2022 – Present',
+      period: '2024 – Present',
       title: 'Open Source',
       subtitle: 'GitHub',
-      detail: 'Contributions to data tooling projects',
+      detail: 'Contributions to data science projects',
     },
   },
 ];

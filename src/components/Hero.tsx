@@ -132,7 +132,7 @@ export default function Hero() {
           </motion.h1>
 
           <motion.h2 className="hero-headline" variants={fadeUp}>
-            Building and Shipping Products · End-to-End Product Development
+            Building and Shipping Products 
           </motion.h2>
 
           <motion.div className="hero-sub" variants={fadeUp}>
@@ -141,7 +141,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.p className="hero-description" variants={fadeUp}>
-            Building scalable systems across Backend, Data, and AI.
+            End-to-End Product Development
           </motion.p>
 
           <motion.ul className="hero-highlights" variants={highlightList}>
