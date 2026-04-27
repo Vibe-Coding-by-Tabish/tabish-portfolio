@@ -137,7 +137,7 @@ export default function Hero() {
 
           <motion.div className="hero-sub" variants={fadeUp}>
             <p>Data Engineering · Data Science · Software Engineering · Machine Learning</p>
-            <p>Public Speaking · Talks · Football · Table Tennis</p>
+            <p>Public Speaking · Tech Talks · Football · Table Tennis</p>
           </motion.div>
 
           <motion.p className="hero-description" variants={fadeUp}>

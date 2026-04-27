@@ -21,8 +21,8 @@ const ROWS: { left: Entry; right: Entry }[] = [
     right: {
       period: 'Feb 2025 – Present',
       title: 'Software Development Engineer',
-      subtitle: 'Company Name',
-      detail: 'Shipped 5 PoCs · leading product end-to-end',
+      subtitle: 'Nonstop io',
+      detail: 'Shipped 5 PoCs · Leading product end-to-end',
     },
   },
   {
