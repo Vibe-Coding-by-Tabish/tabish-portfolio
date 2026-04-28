@@ -317,7 +317,7 @@ body {
   margin: auto;
   padding: 32px 0 96px;
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   align-items: center;
   gap: 80px;
   position: relative;
@@ -1130,7 +1130,7 @@ body {
   }
 
   .hero-content {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: flex-start;
     gap: 48px;
     padding: 24px 0 72px;
