@@ -30,6 +30,28 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <!--
+      Resolve the theme before first paint so dark-mode visitors never see a
+      white flash. React reads the attribute this sets as its initial state,
+      so the DOM and the app can't disagree. Must stay inline and blocking.
+    -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+          // Paints the browser's default canvas/scrollbars correctly even in the
+          // moment before the stylesheet is parsed
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {
+          /* storage blocked (private mode) — CSS :root defaults to light */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

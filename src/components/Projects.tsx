@@ -191,7 +191,12 @@ export default function Projects() {
                 className="project-image"
                 variants={imageVariants}
               >
-                <img src={project.image} alt={project.title} />
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  loading="lazy"
+                  decoding="async"
+                />
               </motion.div>
             </motion.article>
           ))}

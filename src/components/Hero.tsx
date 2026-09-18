@@ -36,13 +36,15 @@ const highlightItem: Variants = {
 
 // ── Image Stack Logic ─────────────────────────────────────────
 
-// Add photos to /public/images/ and list them here
+// Add photos to /public/images/ and list them here.
+// Stored as WebP: the stills are resized to cover the 248x330 card at 2x DPR,
+// and the two talk clips are animated WebP rather than multi-MB GIFs.
 const IMAGES = [
-  '/images/anchoring.jpg',
-  '/images/kafka.gif',
-  '/images/iit_kgp_hoodie.png',
-  '/images/backend.gif',
-  '/images/isbnm.jpeg',
+  '/images/anchoring.webp',
+  '/images/kafka.webp',
+  '/images/iit_kgp_hoodie.webp',
+  '/images/backend.webp',
+  '/images/isbnm.webp',
 ];
 
 type Slot = 'front' | 'back-right' | 'back-left' | 'hidden';
@@ -68,6 +70,10 @@ const SLOT_Z: Record<Slot, number> = {
 
 const CARD_TRANSITION = { duration: 0.55, ease: 'easeInOut' } as const;
 const AUTO_CYCLE_MS = 7000;
+
+// A drag past this distance (or flicked faster than this) advances the stack
+const SWIPE_DISTANCE_PX = 60;
+const SWIPE_VELOCITY = 450;
 
 // ── Data ──────────────────────────────────────────────────────
 
@@ -204,6 +210,7 @@ export default function Hero() {
             {IMAGES.map((src, i) => {
               const slot = getSlot(i, activeIndex, IMAGES.length);
               const transform = SLOT_TRANSFORM[slot];
+              const isFront = slot === 'front';
               return (
                 <motion.div
                   key={i}
@@ -211,8 +218,30 @@ export default function Hero() {
                   style={{ zIndex: SLOT_Z[slot] }}
                   animate={transform}
                   transition={CARD_TRANSITION}
+                  // Only the top card is draggable; constraints snap it back to
+                  // the front slot's x: 0 so `animate` stays in charge afterwards
+                  drag={isFront ? 'x' : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.5}
+                  dragMomentum={false}
+                  onDragStart={() => setPaused(true)}
+                  onDragEnd={(_, info) => {
+                    setPaused(false);
+                    const { offset, velocity } = info;
+                    if (offset.x < -SWIPE_DISTANCE_PX || velocity.x < -SWIPE_VELOCITY) next();
+                    else if (offset.x > SWIPE_DISTANCE_PX || velocity.x > SWIPE_VELOCITY) prev();
+                  }}
                 >
-                  <img src={src} alt="" draggable={false} />
+                  <img
+                    src={src}
+                    alt=""
+                    draggable={false}
+                    decoding="async"
+                    // The first card is the hero's LCP candidate; the rest sit in
+                    // the same box, so they load too — just behind it in the queue
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={i === 0 ? 'high' : 'low'}
+                  />
                 </motion.div>
               );
             })}
