@@ -40,11 +40,28 @@ const highlightItem: Variants = {
 // Stored as WebP: the stills are resized to cover the 248x330 card at 2x DPR,
 // and the two talk clips are animated WebP rather than multi-MB GIFs.
 const IMAGES = [
-  '/images/anchoring.webp',
-  '/images/kafka.webp',
-  '/images/iit_kgp_hoodie.webp',
-  '/images/backend.webp',
-  '/images/isbnm.webp',
+  {
+    src: '/images/anchoring.webp',
+    alt: 'Tabish anchoring the NonStop io annual awards night',
+  },
+  {
+    // TODO: confirm wording — described from the clip itself
+    src: '/images/kafka.webp',
+    alt: 'Tabish presenting "Kafka & Under the Hood" at NonStop io Technologies, Pune',
+  },
+  {
+    src: '/images/iit_kgp_hoodie.webp',
+    alt: 'Intel AI Hackathon finals at IIT Kharagpur',
+  },
+  {
+    // TODO: confirm wording — described from the clip itself
+    src: '/images/backend.webp',
+    alt: 'Tabish hosting a quiz segment in front of an audience at a NonStop io event',
+  },
+  {
+    src: '/images/isbnm.webp',
+    alt: 'ISB&M Pune analytics case competition',
+  },
 ];
 
 type Slot = 'front' | 'back-right' | 'back-left' | 'hidden';
@@ -78,9 +95,10 @@ const SWIPE_VELOCITY = 450;
 // ── Data ──────────────────────────────────────────────────────
 
 const HIGHLIGHTS = [
-  'Top 10 All India – Intel AI Hackathon @ IEEE Indicon, IIT KGP',
-  '1.5+ yrs SDE @ NonStop io — shipped 5 PoCs, leading a product end-to-end',
-  '1st Runner-Up – Data Analytics Case Competition, ISB&M Pune',
+  'Maintain a regulated clinical variant review platform across 5 environments for a US genomics laboratory',
+  'Built InterGenix: HL7 v2, FHIR and OpenELIS integration for clinical data exchange',
+  'StrixFlow: open-source orchestration across 5 workflow engines, 395 tests',
+  'Top 10 All India, Intel AI Hackathon @ IEEE INDICON, IIT Kharagpur',
 ] as const;
 
 // ── Component ─────────────────────────────────────────────────
@@ -138,12 +156,11 @@ export default function Hero() {
           </motion.h1>
 
           <motion.h2 className="hero-headline" variants={fadeUp}>
-            Building and Shipping Products 
+            Building systems for clinical genomics and health data
           </motion.h2>
 
           <motion.div className="hero-sub" variants={fadeUp}>
-            <p>Data Engineering · Data Science · Software Engineering · Machine Learning</p>
-            <p>Public Speaking · Tech Talks · Football · Table Tennis</p>
+            <p>Health Data Infrastructure · Workflow Orchestration · Data Engineering · Machine Learning</p>
           </motion.div>
 
           <motion.p className="hero-description" variants={fadeUp}>
@@ -207,7 +224,7 @@ export default function Hero() {
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
-            {IMAGES.map((src, i) => {
+            {IMAGES.map(({ src, alt }, i) => {
               const slot = getSlot(i, activeIndex, IMAGES.length);
               const transform = SLOT_TRANSFORM[slot];
               const isFront = slot === 'front';
@@ -234,7 +251,7 @@ export default function Hero() {
                 >
                   <img
                     src={src}
-                    alt=""
+                    alt={alt}
                     draggable={false}
                     decoding="async"
                     // The first card is the hero's LCP candidate; the rest sit in

@@ -15,42 +15,42 @@ const ROWS: { left: Entry; right: Entry }[] = [
     left: {
       period: 'September 2022 – June 2026',
       title: 'B.Tech in Artificial Intelligence & Data Science',
-      subtitle: 'AISSMS Institute of Information Technology',
-      detail: 'Relevant coursework · GPA x.x / 10',
+      subtitle: 'AISSMS Institute of Information Technology, Pune',
+      detail: 'CGPA 8.36 / 10 · Machine Learning, Deep Learning, NLP, MLOps',
     },
     right: {
-      period: 'Feb 2025 – Present',
+      period: 'June 2026 – Present',
       title: 'Software Development Engineer',
-      subtitle: 'Nonstop io',
-      detail: 'Shipped 5 PoCs · Leading product end-to-end',
+      subtitle: 'NonStop io Technologies',
+      detail: 'Clinical genomics platform · HL7 v2 and FHIR integration · 5 environments',
     },
   },
   {
     left: {
-      period: 'Aug 2020 – June 2022',
-      title: 'Higher Secondary Education',
-      subtitle: 'Sinhgad City School',
-      detail: 'Science - PCM · 92%',
+      period: 'February 2025 – June 2026',
+      title: 'Software Development Engineer, Intern',
+      subtitle: 'NonStop io Technologies',
+      detail: 'Genomics data workflows · 100–300 GB datasets · AWS Batch, EKS, HealthOmics',
     },
     right: {
+      period: '2025 – Present',
+      title: 'Publications',
+      subtitle: 'Two peer-reviewed survey papers',
+      detail: 'Knowledge graphs for document understanding · Neurosymbolic AI',
+    },
+  },
+  {
+    left: {
       period: '2023 – Present',
-      title: 'Hackathons',
-      subtitle: 'Multiple competitions',
-      detail: 'Top 10 All India · Intel AI @ IIT KGP · 2nd @ ISB&M Pune',
-    },
-  },
-  {
-    left: {
-      period: '2019 – 2020',
-      title: 'Secondary School - 10th Grade',
-      subtitle: 'Sinhgad City School',
-      detail: 'CBSE - 96% · Mathematics All India Top 0.1%',
+      title: 'Hackathons & Competitions',
+      subtitle: 'National level',
+      detail: 'Top 10 All India, Intel AI @ IIT Kharagpur · 1st Runner-Up, ISB&M Pune',
     },
     right: {
-      period: '2024 – Present',
-      title: 'Open Source',
-      subtitle: 'GitHub',
-      detail: 'Contributions to data science projects',
+      period: '2025 – Present',
+      title: 'Speaking & Community',
+      subtitle: 'NonStop io Technologies',
+      detail: 'Host of the monthly meetup, 10+ editions · Anchored the annual awards night',
     },
   },
 ];
@@ -85,12 +85,9 @@ export default function Timeline() {
 
         <div className="tl-body">
 
-          {/* Column labels */}
-          <div className="tl-col-labels">
-            <span className="tl-col-label tl-col-label-left">Education</span>
-            <span />
-            <span className="tl-col-label tl-col-label-right">Experience</span>
-          </div>
+          {/* Column labels removed: the two columns are no longer split
+              Education / Experience — each side now mixes roles, study,
+              publications and community work. */}
 
           {/* Vertical spine */}
           <motion.div

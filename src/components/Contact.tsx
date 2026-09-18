@@ -17,7 +17,7 @@ const itemVariants: Variants = {
 const LINKS = [
   { label: 'LinkedIn', href: 'https://linkedin.com/in/tabishaliansari', external: true  },
   { label: 'GitHub',   href: 'https://github.com/tabishaliansari',      external: true  },
-  { label: 'Email',    href: 'mailto:tabish.ansari004@yahoo.com',       external: false },
+  { label: 'Email',    href: 'mailto:ansaritabishali1@gmail.com',      external: false },
   { label: 'YouTube',  href: 'https://youtube.com/@teammavericks-00',   external: true  },
   { label: 'X',        href: 'https://x.com/tabish_ali004',             external: true  },
 ] as const;
@@ -37,7 +37,7 @@ export default function Contact() {
         <motion.div className="contact-header" variants={itemVariants}>
           <p className="contact-label">Contact</p>
           <h2 className="contact-title">Get in touch</h2>
-          <p className="contact-sub">If you're building something interesting or hiring, let's talk.</p>
+          <p className="contact-sub">Open to conversations about health data infrastructure, genomics tooling and research collaboration.</p>
         </motion.div>
 
         <ul className="contact-list">

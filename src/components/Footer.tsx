@@ -29,7 +29,7 @@ export default function Footer({ onViewResume }: FooterProps) {
           {/* Left — identity */}
           <div className="footer-identity">
             <p className="footer-name">Tabish Ali Ansari</p>
-            <p className="footer-tagline">Simple but Unique</p>
+            <p className="footer-tagline">Clinical genomics infrastructure · Pune, India</p>
           </div>
 
           {/* Right — nav */}

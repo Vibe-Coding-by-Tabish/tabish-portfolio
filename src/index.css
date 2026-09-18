@@ -668,6 +668,13 @@ body {
   letter-spacing: 0.02em;
 }
 
+.project-note {
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 .project-links {
   display: flex;
   gap: 16px;
@@ -770,7 +777,88 @@ body {
   transform: scale(1.03);
 }
 
-/* ── Timeline Section ───────────────────────────────────────── */
+/* ── Publications ───────────────────────────────────────────── */
+
+.pubs {
+  border-top: 1px solid var(--border);
+  padding: 96px 32px 120px;
+  width: 100%;
+}
+
+.pubs-container {
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.pubs-header {
+  margin-bottom: 64px;
+}
+
+.pubs-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.pubs-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.pubs-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.pub-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 760px;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+}
+
+.pub-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-family: 'SF Mono', ui-monospace, 'Fira Code', 'Consolas', monospace;
+}
+
+.pub-meta .pub-role::before {
+  content: '·';
+  margin-right: 10px;
+}
+
+.pub-title {
+  font-size: clamp(17px, 1.7vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.pub-summary {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Timeline ───────────────────────────────────────────────── */
 
 .tl-section {
   border-top: 1px solid var(--border);
@@ -1145,6 +1233,7 @@ body {
 
   /* Projects / Timeline / Contact / Footer: adjust padding on tablet/mobile */
   .projects,
+  .pubs,
   .tl-section,
   .contact {
     padding: 72px 24px 96px;
@@ -1191,6 +1280,7 @@ body {
   }
 
   .projects,
+  .pubs,
   .tl-section,
   .contact {
     padding: 60px 20px 80px;

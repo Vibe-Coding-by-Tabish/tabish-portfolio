@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Hero from './components/Hero';
 import Header from './components/Header';
 import Projects from './components/Projects';
+import Publications from './components/Publications';
 import Timeline from './components/Timeline';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -97,6 +98,7 @@ export default function App() {
             <Hero />
             <Projects />
             <Timeline />
+            <Publications />
             <Contact />
             <Footer onViewResume={() => navigate('resume')} />
           </div>

@@ -8,8 +8,9 @@ interface HeaderProps {
 }
 
 const NAV_LINKS = [
-  { label: 'Projects', href: '#projects' },
-  { label: 'Contact',  href: '#contact'  },
+  { label: 'Projects',     href: '#projects'     },
+  { label: 'Publications', href: '#publications' },
+  { label: 'Contact',      href: '#contact'      },
 ] as const;
 
 export default function Header({ theme, onToggleTheme, onViewResume }: HeaderProps) {
