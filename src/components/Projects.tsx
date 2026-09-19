@@ -82,7 +82,7 @@ const PROJECTS: Project[] = [
     description:
       'Orchestration platform that runs pipelines across five scientific workflow engines (Nextflow, Snakemake, CWL, WDL and custom Python) without rewriting them. Built for clinical and research institutions where genomic data cannot leave the building for legal or governance reasons. Recovers DAG structure through native engine introspection rather than a reimplemented parser, so the graph you see is the graph the engine actually executed. Validated by 395 unit tests plus Playwright end-to-end coverage.',
     tech: ['Python', 'Nextflow', 'Snakemake', 'CWL', 'WDL', 'Playwright', 'ruff'],
-    image: '/projects/strixflow.png', // TODO: screenshot of the DAG view — file does not exist yet
+    image: '/projects/strixflow.webp',
     // TODO: add the StrixFlow repo URL. Omitted rather than stubbed so no
     // broken "GitHub" link renders in the meantime.
   },
@@ -93,7 +93,7 @@ const PROJECTS: Project[] = [
     description:
       'Healthcare interoperability service acting as the validation and orchestration layer alongside Mirth Connect. Parses and validates HL7 v2 messages through HAPI, exchanges data with a Medplum FHIR server, and polls OpenELIS for laboratory results. Reached full operational status in a production clinical pipeline.',
     tech: ['Java 17', 'Spring Boot 3', 'HAPI HL7v2', 'FHIR / Medplum', 'Mirth Connect', 'OpenELIS'],
-    image: '/projects/intergenix.png', // TODO: architecture diagram, not a screenshot — file does not exist yet
+    image: '/projects/intergenix.webp',
     // TODO: confirm what you are permitted to disclose about this engagement,
     // then set `note` (the spec's current safe phrasing is
     // "A clinical genomics laboratory in the United States").
@@ -105,7 +105,7 @@ const PROJECTS: Project[] = [
     description:
       'Retrieval system combining RAG, vector search and knowledge graphs to support multi-hop contextual reasoning over unstructured research documents. Formed the basis of a published survey on knowledge graphs for intelligent document understanding.',
     tech: ['FastAPI', 'React', 'PostgreSQL', 'Neo4j', 'Qdrant'],
-    image: '/projects/graphlm.png', // TODO: file does not exist yet
+    image: '/projects/graphlm.webp',
     // TODO: add the GraphLM repo URL if the repo is public.
     doi: 'https://doi.org/10.22214/ijraset.2025.75390',
   },
@@ -116,7 +116,7 @@ const PROJECTS: Project[] = [
     description:
       'End-to-end MRI classification pipeline built on VGG-19, with DVC for data and model versioning and MLflow for experiment tracking, so any result can be traced back to the exact data and weights that produced it. Containerised with Docker; FastAPI backend and React frontend deployed to production.',
     tech: ['Python', 'VGG-19', 'DVC', 'MLflow', 'Docker', 'FastAPI', 'React'],
-    image: '/projects/adapt.png',
+    image: '/projects/adapt.webp',
     github: 'https://github.com/DA-workshop-101/Alzheimer-Stages-Classification-using-Deep-Learning',
     live: 'https://adapt-webapp-007.netlify.app/',
     youtube: 'https://www.youtube.com/watch?v=U3JPrEf1Syo',
@@ -128,7 +128,7 @@ const PROJECTS: Project[] = [
     description:
       'ML platform for diabetes risk classification reaching approximately 83% accuracy across a full preprocessing, training and evaluation workflow. Led a team of four. Top 10 Finalist, Intel AI Hackathon, IEEE INDICON, IIT Kharagpur.',
     tech: ['Python', 'Scikit-learn', 'Flask'],
-    image: '/projects/metaboliq.png',
+    image: '/projects/metaboliq.webp',
     github: 'https://github.com/tabishaliansari/MetaboliQ-AI',
     youtube: 'https://www.youtube.com/watch?v=sxvw4tzdTpY',
   },
@@ -229,16 +229,11 @@ export default function Projects() {
                 className="project-image"
                 variants={imageVariants}
               >
-                {/* Three screenshots are still outstanding (see the TODOs in
-                    PROJECTS). Until they land, hide the broken <img> so the card
-                    falls back to the panel's own background instead of showing a
-                    broken-image icon. Safe to delete once all files exist. */}
                 <img
                   src={project.image}
                   alt={project.title}
                   loading="lazy"
                   decoding="async"
-                  onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               </motion.div>
             </motion.article>
