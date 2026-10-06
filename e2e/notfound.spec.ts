@@ -84,3 +84,9 @@ test('known routes are not treated as 404', async ({ page }) => {
     await expect(page.locator('.nf')).toHaveCount(0);
   }
 });
+
+test('404.html is noindex and does not claim the home page as canonical', async ({ request }) => {
+  const html = await (await request.get('/404.html')).text();
+  expect(html).toContain('<meta name="robots" content="noindex" />');
+  expect(html).not.toContain('rel="canonical"');
+});

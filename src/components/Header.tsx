@@ -5,7 +5,8 @@ interface HeaderProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onViewResume: () => void;
-  // Set on pages without the home sections (404): links go home instead of scrolling
+  onViewSkills: () => void;
+  // Set on pages without the home sections (404, skills): links go home instead of scrolling
   onNavigateHome?: (section?: string) => void;
 }
 
@@ -15,7 +16,7 @@ const NAV_LINKS = [
   { label: 'Contact',      href: '#contact'      },
 ] as const;
 
-export default function Header({ theme, onToggleTheme, onViewResume, onNavigateHome }: HeaderProps) {
+export default function Header({ theme, onToggleTheme, onViewResume, onViewSkills, onNavigateHome }: HeaderProps) {
   const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -66,6 +67,11 @@ export default function Header({ theme, onToggleTheme, onViewResume, onNavigateH
     onViewResume();
   };
 
+  const handleSkills = () => {
+    setMobileOpen(false);
+    onViewSkills();
+  };
+
   return (
     <motion.header
       className={`header${scrolled ? ' scrolled' : ''}`}
@@ -91,6 +97,9 @@ export default function Header({ theme, onToggleTheme, onViewResume, onNavigateH
               {label}
             </button>
           ))}
+          <button className="nav-link" onClick={handleSkills}>
+            Skills
+          </button>
           <button className="nav-resume" onClick={handleResume}>
             Resume
           </button>
@@ -135,6 +144,9 @@ export default function Header({ theme, onToggleTheme, onViewResume, onNavigateH
                   {label}
                 </button>
               ))}
+              <button className="mobile-nav-link" onClick={handleSkills}>
+                Skills
+              </button>
               <button className="mobile-nav-link" onClick={handleResume}>
                 Resume
               </button>

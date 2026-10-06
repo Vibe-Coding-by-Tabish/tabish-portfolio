@@ -2,11 +2,12 @@
 
 > Software Development Engineer at NonStop io Technologies (Pune, India) building systems for clinical genomics and health data: workflow orchestration, HL7 v2 and FHIR interoperability, and reproducibility for scientific computing.
 
-Focus areas: health data infrastructure, workflow orchestration, data engineering and machine learning. Open to conversations about health data infrastructure, genomics tooling and research collaboration.
+Open to software engineering, data engineering, data science and AI/ML roles. Focus areas: health data infrastructure, workflow orchestration, data engineering and machine learning. Open to conversations about health data infrastructure, genomics tooling and research collaboration.
 
 ## Pages
 
 - [Portfolio](https://tabishaliansari.vercel.app/): projects, publications, experience and contact links
+- [Skills](https://tabishaliansari.vercel.app/skills): software engineering, data engineering, data science and AI/ML, each with evidence from production work and projects
 - [Resume (web viewer)](https://tabishaliansari.vercel.app/resume)
 - [Resume (PDF)](https://tabishaliansari.vercel.app/resume.pdf)
 

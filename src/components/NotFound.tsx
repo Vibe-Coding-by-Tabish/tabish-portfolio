@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { motion, type Variants } from 'framer-motion';
 
 interface NotFoundProps {
@@ -51,12 +50,6 @@ export default function NotFound({ theme, onGoHome, onViewResume }: NotFoundProp
       `Hi Tabish,\n\nThis URL didn't work: ${window.location.href}\n` +
       `I got there from: ${document.referrer || 'typed it in / unknown'}\n`
     )}`;
-
-  useEffect(() => {
-    const previous = document.title;
-    document.title = '404 · Variant of unknown significance | Tabish Ali Ansari';
-    return () => { document.title = previous; };
-  }, []);
 
   const goHome = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!isPlainClick(e)) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Hero from './components/Hero';
 import Header from './components/Header';
@@ -9,14 +9,18 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ResumeViewer from './components/ResumeViewer';
 import NotFound from './components/NotFound';
+import Skills from './components/Skills';
+import { PAGE_META } from './pageMeta';
+import { applyPageMeta } from './headMeta';
 
-type Page = 'home' | 'resume' | 'notfound';
+type Page = 'home' | 'resume' | 'skills' | 'notfound';
 type Theme = 'light' | 'dark';
 
 function pageFromPath(pathname: string): Page {
   const path = pathname.replace(/\/+$/, '') || '/';
   if (path === '/' || path === '/index.html') return 'home';
   if (path === '/resume') return 'resume';
+  if (path === '/skills') return 'skills';
   return 'notfound';
 }
 
@@ -63,6 +67,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (page === 'notfound') document.title = '404 · Variant of unknown significance | Tabish Ali Ansari';
+    else applyPageMeta(PAGE_META[page]);
+  }, [page]);
+
+  useEffect(() => {
     const handlePop = () => {
       setPage(pageFromPath(window.location.pathname));
     };
@@ -71,17 +80,19 @@ export default function App() {
   }, []);
 
   const navigate = (to: Exclude<Page, 'notfound'>) => {
-    window.history.pushState(null, '', to === 'home' ? '/' : '/resume');
+    const path = PAGE_META[to].path;
+    if (window.location.pathname !== path) window.history.pushState(null, '', path);
+    if (to === page) window.scrollTo({ top: 0, behavior: 'smooth' });
     setPage(to);
   };
 
-  // From the 404 page: go home, then jump to the requested section (or the top)
+  // From a page without the home sections: go home, then jump to the requested section (or the top)
   const goHome = (section?: string) => {
     pendingSection.current = section ?? 'top';
     navigate('home');
   };
 
-  // Runs when the home tree mounts, after the 404 page's exit animation
+  // Runs when the home tree mounts, after the previous page's exit animation
   const landOnPendingSection = (el: HTMLDivElement | null) => {
     const target = pendingSection.current;
     if (!el || !target) return;
@@ -91,6 +102,18 @@ export default function App() {
       else document.querySelector(target)?.scrollIntoView();
     });
   };
+
+  // Sub-pages mount after the previous page's exit; open them at the top
+  // (or at the #fragment in a direct link like /skills#data-engineering)
+  // Stable identity: an inline ref callback would re-run on every render
+  const startAtTop = useCallback((el: HTMLDivElement | null) => {
+    if (!el) return;
+    requestAnimationFrame(() => {
+      const target = window.location.hash && document.querySelector(window.location.hash);
+      if (target) target.scrollIntoView();
+      else window.scrollTo(0, 0);
+    });
+  }, []);
 
   // Only an explicit toggle is persisted — that's what marks the preference as
   // the visitor's own and stops the OS listener above from overriding it.
@@ -113,15 +136,18 @@ export default function App() {
           onBack={() => navigate('home')}
           onToggleTheme={toggleTheme}
         />
-      ) : page === 'notfound' ? (
+      ) : page === 'notfound' || page === 'skills' ? (
         <motion.div
-          key="notfound"
+          key={page}
+          ref={startAtTop}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
         >
-          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
+          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
           <div style={{ paddingTop: 64 }}>
-            <NotFound theme={theme} onGoHome={() => goHome()} onViewResume={() => navigate('resume')} />
-            <Footer onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
+            {page === 'skills'
+              ? <Skills onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
+              : <NotFound theme={theme} onGoHome={() => goHome()} onViewResume={() => navigate('resume')} />}
+            <Footer onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
           </div>
         </motion.div>
       ) : (
@@ -130,14 +156,14 @@ export default function App() {
           ref={landOnPendingSection}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
         >
-          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} />
+          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
           <div style={{ paddingTop: 64 }}>
             <Hero />
             <Projects />
             <Timeline />
             <Publications />
             <Contact />
-            <Footer onViewResume={() => navigate('resume')} />
+            <Footer onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
           </div>
         </motion.div>
       )}

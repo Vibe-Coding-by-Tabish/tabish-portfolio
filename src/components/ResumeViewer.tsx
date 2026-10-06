@@ -19,7 +19,7 @@ export default function ResumeViewer({ theme, onBack, onToggleTheme }: ResumeVie
           ← Portfolio
         </button>
 
-        <span className="resume-nav-title">Resume</span>
+        <h1 className="resume-nav-title">Resume</h1>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button className="theme-toggle" onClick={onToggleTheme} aria-label="Toggle theme">
@@ -34,7 +34,7 @@ export default function ResumeViewer({ theme, onBack, onToggleTheme }: ResumeVie
       <iframe
         className="resume-iframe"
         src="/resume.pdf"
-        title="Resume"
+        title="Resume of Tabish Ali Ansari"
       />
     </motion.div>
   );
