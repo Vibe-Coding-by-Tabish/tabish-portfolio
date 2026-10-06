@@ -583,6 +583,14 @@ body {
   width: 100%;
 }
 
+/* Pre-reveal slide-in offsets (framer-motion x) must not widen the page */
+.projects,
+.pubs,
+.tl-section,
+.contact {
+  overflow-x: clip;
+}
+
 .projects-container {
   max-width: 1060px;
   margin: 0 auto;
