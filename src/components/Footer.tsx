@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 
 interface FooterProps {
   onViewResume: () => void;
+  // Set on pages without the home sections (404): links go home instead of scrolling
+  onNavigateHome?: (section: string) => void;
 }
 
 const NAV = [
@@ -19,7 +21,7 @@ const fadeUp = {
 const scrollTo = (href: string) =>
   document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
 
-export default function Footer({ onViewResume }: FooterProps) {
+export default function Footer({ onViewResume, onNavigateHome }: FooterProps) {
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -35,7 +37,7 @@ export default function Footer({ onViewResume }: FooterProps) {
           {/* Right — nav */}
           <nav className="footer-nav" aria-label="Footer navigation">
             {NAV.map(({ label, href }) => (
-              <button key={label} className="footer-link" onClick={() => scrollTo(href)}>
+              <button key={label} className="footer-link" onClick={() => onNavigateHome ? onNavigateHome(href) : scrollTo(href)}>
                 {label}
               </button>
             ))}

@@ -1354,3 +1354,128 @@ body {
     display: none;
   }
 }
+
+/* ── 404 ────────────────────────────────────────────────────── */
+
+.nf {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  padding: 48px 32px 96px;
+}
+
+.nf-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  align-items: center;
+  gap: 64px;
+}
+
+.nf-plate {
+  margin: 0;
+}
+
+/* The plates are drawn on #fff / #000; blending makes their background
+   disappear into the page's own --bg in either theme */
+.nf-plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: multiply;
+  user-select: none;
+}
+
+[data-theme='dark'] .nf-plate img {
+  mix-blend-mode: lighten;
+}
+
+.nf-text {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.nf-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.nf-title {
+  font-size: clamp(32px, 4.6vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--text-primary);
+}
+
+.nf-sub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.nf-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  word-break: break-all;
+}
+
+.nf-redirect {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.nf-home-url {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: #2c3480;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+}
+
+.nf-home-url:hover {
+  color: #2c3480;
+}
+
+[data-theme='dark'] .nf-home-url {
+  text-decoration-color: #6b78d6;
+}
+
+[data-theme='dark'] .nf-home-url:hover {
+  color: #8f9be3;
+}
+
+.nf-cta {
+  padding-top: 8px;
+}
+
+@media (max-width: 820px) {
+  .nf {
+    align-items: flex-start;
+    padding: 32px 20px 80px;
+  }
+
+  .nf-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .nf-plate {
+    width: min(260px, 70vw);
+    margin: 0 auto;
+  }
+}

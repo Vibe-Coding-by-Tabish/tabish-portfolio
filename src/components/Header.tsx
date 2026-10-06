@@ -5,6 +5,8 @@ interface HeaderProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onViewResume: () => void;
+  // Set on pages without the home sections (404): links go home instead of scrolling
+  onNavigateHome?: (section?: string) => void;
 }
 
 const NAV_LINKS = [
@@ -13,7 +15,7 @@ const NAV_LINKS = [
   { label: 'Contact',      href: '#contact'      },
 ] as const;
 
-export default function Header({ theme, onToggleTheme, onViewResume }: HeaderProps) {
+export default function Header({ theme, onToggleTheme, onViewResume, onNavigateHome }: HeaderProps) {
   const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -50,10 +52,14 @@ export default function Header({ theme, onToggleTheme, onViewResume }: HeaderPro
   };
 
   const scrollTo = (href: string) =>
-    runScroll(() => document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }));
+    runScroll(() => onNavigateHome
+      ? onNavigateHome(href)
+      : document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }));
 
   const scrollToTop = () =>
-    runScroll(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    runScroll(() => onNavigateHome
+      ? onNavigateHome()
+      : window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   const handleResume = () => {
     setMobileOpen(false);
@@ -70,7 +76,7 @@ export default function Header({ theme, onToggleTheme, onViewResume }: HeaderPro
       <div className="header-inner">
 
         {/* Logo / name */}
-        <button className="header-logo" onClick={scrollToTop} aria-label="Scroll to top">
+        <button className="header-logo" onClick={scrollToTop} aria-label={onNavigateHome ? 'Go to homepage' : 'Scroll to top'}>
           Tabish
         </button>
 

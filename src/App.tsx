@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Hero from './components/Hero';
 import Header from './components/Header';
@@ -8,9 +8,17 @@ import Timeline from './components/Timeline';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ResumeViewer from './components/ResumeViewer';
+import NotFound from './components/NotFound';
 
-type Page = 'home' | 'resume';
+type Page = 'home' | 'resume' | 'notfound';
 type Theme = 'light' | 'dark';
+
+function pageFromPath(pathname: string): Page {
+  const path = pathname.replace(/\/+$/, '') || '/';
+  if (path === '/' || path === '/index.html') return 'home';
+  if (path === '/resume') return 'resume';
+  return 'notfound';
+}
 
 const THEME_KEY = 'theme';
 
@@ -35,9 +43,9 @@ function storedTheme(): Theme | null {
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const [page, setPage] = useState<Page>(
-    window.location.pathname === '/resume' ? 'resume' : 'home'
-  );
+  const [page, setPage] = useState<Page>(() => pageFromPath(window.location.pathname));
+  // Where to land once the home page mounts after leaving the 404 page
+  const pendingSection = useRef<string | null>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -56,15 +64,32 @@ export default function App() {
 
   useEffect(() => {
     const handlePop = () => {
-      setPage(window.location.pathname === '/resume' ? 'resume' : 'home');
+      setPage(pageFromPath(window.location.pathname));
     };
     window.addEventListener('popstate', handlePop);
     return () => window.removeEventListener('popstate', handlePop);
   }, []);
 
-  const navigate = (to: Page) => {
+  const navigate = (to: Exclude<Page, 'notfound'>) => {
     window.history.pushState(null, '', to === 'home' ? '/' : '/resume');
     setPage(to);
+  };
+
+  // From the 404 page: go home, then jump to the requested section (or the top)
+  const goHome = (section?: string) => {
+    pendingSection.current = section ?? 'top';
+    navigate('home');
+  };
+
+  // Runs when the home tree mounts, after the 404 page's exit animation
+  const landOnPendingSection = (el: HTMLDivElement | null) => {
+    const target = pendingSection.current;
+    if (!el || !target) return;
+    pendingSection.current = null;
+    requestAnimationFrame(() => {
+      if (target === 'top') window.scrollTo(0, 0);
+      else document.querySelector(target)?.scrollIntoView();
+    });
   };
 
   // Only an explicit toggle is persisted — that's what marks the preference as
@@ -88,9 +113,21 @@ export default function App() {
           onBack={() => navigate('home')}
           onToggleTheme={toggleTheme}
         />
+      ) : page === 'notfound' ? (
+        <motion.div
+          key="notfound"
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+        >
+          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
+          <div style={{ paddingTop: 64 }}>
+            <NotFound theme={theme} onGoHome={() => goHome()} onViewResume={() => navigate('resume')} />
+            <Footer onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
+          </div>
+        </motion.div>
       ) : (
         <motion.div
           key="home"
+          ref={landOnPendingSection}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
         >
           <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} />
