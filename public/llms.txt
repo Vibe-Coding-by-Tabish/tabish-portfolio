@@ -1,0 +1,38 @@
+# Tabish Ali Ansari
+
+> Software Development Engineer at NonStop io Technologies (Pune, India) building systems for clinical genomics and health data: workflow orchestration, HL7 v2 and FHIR interoperability, and reproducibility for scientific computing.
+
+Focus areas: health data infrastructure, workflow orchestration, data engineering and machine learning. Open to conversations about health data infrastructure, genomics tooling and research collaboration.
+
+## Pages
+
+- [Portfolio](https://tabishaliansari.vercel.app/): projects, publications, experience and contact links
+- [Resume (web viewer)](https://tabishaliansari.vercel.app/resume)
+- [Resume (PDF)](https://tabishaliansari.vercel.app/resume.pdf)
+
+## Experience
+
+- Software Development Engineer, NonStop io Technologies (June 2026 – present): maintains a regulated clinical variant review platform across 5 environments for a US genomics laboratory; HL7 v2 and FHIR integration.
+- Software Development Engineer Intern, NonStop io Technologies (February 2025 – June 2026): genomics data workflows on 100–300 GB datasets with AWS Batch, EKS and HealthOmics.
+- B.Tech in Artificial Intelligence & Data Science, AISSMS Institute of Information Technology, Pune (2022 – 2026), CGPA 8.36 / 10.
+
+## Projects
+
+- StrixFlow: local-first genomics workflow orchestration across five engines (Nextflow, Snakemake, CWL, WDL, custom Python) for institutions whose genomic data cannot leave the building. Recovers DAG structure through native engine introspection. 395 unit tests plus Playwright end-to-end coverage.
+- InterGenix: clinical healthcare integration service alongside Mirth Connect. Validates HL7 v2 via HAPI, exchanges data with a Medplum FHIR server and polls OpenELIS for lab results. Java 17, Spring Boot 3. Running in a production clinical pipeline.
+- GraphLM: knowledge-graph-augmented retrieval combining RAG, vector search (Qdrant) and Neo4j for multi-hop reasoning over research documents.
+- [ADAPT](https://github.com/DA-workshop-101/Alzheimer-Stages-Classification-using-Deep-Learning): Alzheimer's disease MRI classification on VGG-19 with DVC and MLflow for full data and model traceability.
+- [MetaboliQ AI](https://github.com/tabishaliansari/MetaboliQ-AI): diabetes risk prediction (~83% accuracy). Top 10 finalist, Intel AI Hackathon, IEEE INDICON, IIT Kharagpur.
+
+## Publications
+
+- [GraphLM: A Comprehensive Survey on Knowledge Graphs for Intelligent Document Understanding](https://doi.org/10.22214/ijraset.2025.75390) (2025, co-author)
+- [Advancing Neurosymbolic AI: A Comprehensive Review of Hybrid Reasoning Frameworks and Applications](https://doi.org/10.55248/gengpi.6.0525.1613) (2025, first author)
+
+## Contact
+
+- [Email](mailto:ansaritabishali1@gmail.com)
+- [LinkedIn](https://linkedin.com/in/tabishaliansari)
+- [GitHub](https://github.com/tabishaliansari)
+- [X](https://x.com/tabish_ali004)
+- [YouTube](https://youtube.com/@teammavericks-00)
