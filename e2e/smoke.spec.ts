@@ -26,6 +26,15 @@ test('resume route embeds the PDF and links back to the portfolio', async ({ pag
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
+test('desktop nav scrolls to its section', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop header control');
+  await page.goto('/');
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Contact' }).click();
+  await expect
+    .poll(() => page.locator('#contact').evaluate(el => Math.round(el.getBoundingClientRect().top)), { timeout: 5000 })
+    .toBeLessThan(120);
+});
+
 test('theme toggle persists across reload', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop header control');
   await page.goto('/');

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
@@ -31,15 +31,29 @@ export default function Header({ theme, onToggleTheme, onViewResume }: HeaderPro
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const scrollTo = (href: string) => {
-    setMobileOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+  // A smooth scroll started while the mobile menu collapses gets cancelled,
+  // so when the menu is open, queue the scroll and run it on exit complete.
+  const pendingScroll = useRef<(() => void) | null>(null);
+
+  const runScroll = (scroll: () => void) => {
+    if (mobileOpen) {
+      pendingScroll.current = scroll;
+      setMobileOpen(false);
+    } else {
+      scroll();
+    }
   };
 
-  const scrollToTop = () => {
-    setMobileOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const onMenuExitComplete = () => {
+    pendingScroll.current?.();
+    pendingScroll.current = null;
   };
+
+  const scrollTo = (href: string) =>
+    runScroll(() => document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }));
+
+  const scrollToTop = () =>
+    runScroll(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   const handleResume = () => {
     setMobileOpen(false);
@@ -95,7 +109,7 @@ export default function Header({ theme, onToggleTheme, onViewResume }: HeaderPro
       </div>
 
       {/* Mobile dropdown */}
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={onMenuExitComplete}>
         {mobileOpen && (
           <motion.div
             id="mobile-menu"

@@ -11,6 +11,8 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
+    // Full Chromium, not headless-shell: the shell finishes smooth scrolls instantly and hides scroll bugs.
+    channel: 'chromium',
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
