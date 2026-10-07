@@ -5,19 +5,18 @@ const ROLES = ['Software Engineering', 'Data Engineering', 'Data Science', 'AI /
 const sectionTop = (page: Page, selector: string) =>
   page.locator(selector).evaluate(el => Math.round(el.getBoundingClientRect().top));
 
-async function openSkillsFromHeader(page: Page, isMobile: boolean) {
-  if (isMobile) {
-    await page.getByRole('button', { name: 'Open menu' }).click();
-    await page.locator('#mobile-menu').getByRole('button', { name: 'Skills', exact: true }).click();
-  } else {
-    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Skills' }).click();
-  }
+async function openSkillsFromDock(page: Page) {
+  const dock = page.getByRole('navigation', { name: 'Sections' });
+  // Compact while reading: the first tap opens it, the second picks Skills
+  await expect(dock.locator('.dock-dot')).toHaveCount(3);
+  await dock.locator('.dock-item.is-dot').first().click();
+  await dock.getByRole('button', { name: 'Skills', exact: true }).click();
 }
 
-test('header Skills link opens the skills page at the top', async ({ page, isMobile }) => {
+test('dock Skills link opens the skills page at the top', async ({ page }) => {
   await page.goto('/');
   await page.locator('#contact').scrollIntoViewIfNeeded();
-  await openSkillsFromHeader(page, isMobile);
+  await openSkillsFromDock(page);
 
   await expect(page).toHaveURL(/\/skills$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Software, data and AI/ML engineering' })).toBeVisible();
@@ -43,6 +42,7 @@ test('jump link scrolls to that role section', async ({ page }) => {
 
 test('"Get in touch" from the skills page lands on the home contact section', async ({ page }) => {
   await page.goto('/skills');
+  await page.evaluate(() => document.fonts.ready);
   await page.getByRole('button', { name: 'Get in touch →' }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect.poll(() => sectionTop(page, '#contact'), { timeout: 5000 }).toBeLessThan(120);
@@ -50,6 +50,7 @@ test('"Get in touch" from the skills page lands on the home contact section', as
 
 test('footer Projects link from the skills page lands on the home projects section', async ({ page }) => {
   await page.goto('/skills');
+  await page.evaluate(() => document.fonts.ready);
   await page.getByRole('navigation', { name: 'Footer navigation' }).getByRole('button', { name: 'Projects' }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect.poll(() => sectionTop(page, '#projects'), { timeout: 5000 }).toBeLessThan(120);

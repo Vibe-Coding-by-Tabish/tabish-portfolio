@@ -25,14 +25,11 @@ test('the visible home URL and the primary button both lead home', async ({ page
   }
 });
 
-test('header section link from the 404 page goes home and lands on that section', async ({ page, isMobile }) => {
+test('dock section link from the 404 page goes home and lands on that section', async ({ page }) => {
   await page.goto(BAD_PATH);
-  if (isMobile) {
-    await page.getByRole('button', { name: 'Open menu' }).click();
-    await page.locator('#mobile-menu').getByRole('button', { name: 'Contact', exact: true }).click();
-  } else {
-    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Contact' }).click();
-  }
+  // The web font swapping in reflows the page; aim the scroll after that
+  await page.evaluate(() => document.fonts.ready);
+  await page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'Contact', exact: true }).click();
 
   await expect(page).toHaveURL(/\/$/);
   await expect.poll(() => sectionTop(page, '#contact'), { timeout: 5000 }).toBeLessThan(120);
@@ -40,6 +37,8 @@ test('header section link from the 404 page goes home and lands on that section'
 
 test('footer link from the 404 page goes home and lands on that section', async ({ page }) => {
   await page.goto(BAD_PATH);
+  // The web font swapping in reflows the page; aim the scroll after that
+  await page.evaluate(() => document.fonts.ready);
   await page.getByRole('navigation', { name: 'Footer navigation' }).getByRole('button', { name: 'Projects' }).click();
 
   await expect(page).toHaveURL(/\/$/);

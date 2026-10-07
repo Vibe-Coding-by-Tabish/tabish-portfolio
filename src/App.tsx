@@ -10,11 +10,16 @@ import Footer from './components/Footer';
 import ResumeViewer from './components/ResumeViewer';
 import NotFound from './components/NotFound';
 import Skills from './components/Skills';
+import Dock, { type DockTarget } from './components/Dock';
+import { useActiveSection } from './useActiveSection';
 import { PAGE_META } from './pageMeta';
 import { applyPageMeta } from './headMeta';
 
 type Page = 'home' | 'resume' | 'skills' | 'notfound';
 type Theme = 'light' | 'dark';
+
+// Home-page sections the dock tracks, in page order
+const HOME_SECTIONS = ['#projects', '#publications', '#contact'] as const;
 
 function pageFromPath(pathname: string): Page {
   const path = pathname.replace(/\/+$/, '') || '/';
@@ -50,6 +55,8 @@ export default function App() {
   const [page, setPage] = useState<Page>(() => pageFromPath(window.location.pathname));
   // Where to land once the home page mounts after leaving the 404 page
   const pendingSection = useRef<string | null>(null);
+  const homeSection = useActiveSection(HOME_SECTIONS, page === 'home');
+  const dockActive: DockTarget | null = page === 'skills' ? 'skills' : homeSection;
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -115,6 +122,12 @@ export default function App() {
     });
   }, []);
 
+  const selectFromDock = (id: DockTarget) => {
+    if (id === 'skills') navigate('skills');
+    else if (page === 'home') document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
+    else goHome(id);
+  };
+
   // Only an explicit toggle is persisted — that's what marks the preference as
   // the visitor's own and stops the OS listener above from overriding it.
   const toggleTheme = () => {
@@ -145,7 +158,7 @@ export default function App() {
             ref={startAtTop}
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
           >
-            <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
+            <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onNavigateHome={() => goHome()} />
             <div style={{ paddingTop: 64 }}>
               {page === 'skills'
                 ? <Skills onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
@@ -159,7 +172,7 @@ export default function App() {
             ref={landOnPendingSection}
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
           >
-            <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
+            <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} />
             <div style={{ paddingTop: 64 }}>
               <Hero />
               <Projects />
@@ -171,6 +184,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      {page !== 'resume' && <Dock active={dockActive} onSelect={selectFromDock} />}
     </MotionConfig>
   );
 }

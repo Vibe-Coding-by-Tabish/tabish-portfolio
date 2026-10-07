@@ -19,8 +19,20 @@ async function drag(page: Page, from: { x: number; y: number }, dx: number, dy: 
 const activePhoto = (page: Page) =>
   page.getByRole('tablist', { name: 'Select photo' }).locator('[aria-selected="true"]').getAttribute('aria-label');
 
-// The hero column slides in on load; measure positions only after it settles
-const waitForHeroEntrance = (page: Page) => page.waitForTimeout(1200);
+// The hero column slides in on load, after a 0.35s pause; returns the box once
+// it has held still for longer than that pause
+async function settledBox(locator: Locator) {
+  let prev = await locator.boundingBox();
+  let stillFor = 0;
+  for (;;) {
+    await locator.page().waitForTimeout(150);
+    const next = await locator.boundingBox();
+    const still = prev && next && Math.abs(next.x - prev.x) < 0.1 && Math.abs(next.y - prev.y) < 0.1;
+    stillFor = still ? stillFor + 150 : 0;
+    if (stillFor >= 600 && next) return next;
+    prev = next;
+  }
+}
 
 const frontCard = (page: Page) =>
   page.locator('.stack-card-inner').filter({ has: page.locator('img[fetchpriority="high"]') });
@@ -44,15 +56,12 @@ test.describe('photo stack', () => {
 
   test('a short, slow drag springs back without changing the photo', async ({ page }) => {
     await page.goto('/');
-    await waitForHeroEntrance(page);
     const card = frontCard(page);
-    const before = await card.boundingBox();
+    const before = await settledBox(card);
 
     await drag(page, await center(card), -30, 0, 30);
-    await page.waitForTimeout(900);
+    await expect.poll(async () => Math.abs((await card.boundingBox())!.x - before.x)).toBeLessThan(2);
     expect(await activePhoto(page)).toBe('Photo 1');
-    const after = await card.boundingBox();
-    expect(Math.abs(after!.x - before!.x)).toBeLessThan(2);
   });
 
   test('the card tilts while it is being dragged', async ({ page }) => {
@@ -102,44 +111,14 @@ test('header firms up with scroll instead of switching at a threshold', async ({
 test('buttons respond on press, before release', async ({ page }) => {
   await page.goto('/skills');
   const button = page.getByRole('button', { name: 'View my resume' });
-  await button.scrollIntoViewIfNeeded();
+  // Centre it: at the bottom edge the floating dock would sit over it
+  await button.evaluate(el => el.scrollIntoView({ block: 'center' }));
+  await page.waitForTimeout(700); // its block slides up 20px as it appears
   const at = await center(button);
   await page.mouse.move(at.x, at.y);
   await page.mouse.down();
   await expect.poll(() => button.evaluate(el => new DOMMatrix(getComputedStyle(el).transform).a)).toBeLessThan(0.99);
   await page.mouse.up();
-});
-
-test.describe('mobile menu', () => {
-  test('pushing the open menu up closes it without tapping a link', async ({ page, isMobile }) => {
-    test.skip(!isMobile, 'hamburger menu is mobile only');
-    await page.goto('/');
-    await page.getByRole('button', { name: 'Open menu' }).click();
-    const menu = page.locator('#mobile-menu');
-    await expect(menu).toBeVisible();
-    await page.waitForTimeout(400); // let the menu finish opening
-
-    // Start the drag on a link: releasing must not navigate
-    await drag(page, await center(menu.getByRole('button', { name: 'Resume' })), 0, -90, 8);
-    await expect(menu).toBeHidden();
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible();
-  });
-
-  test('a small pull down does not close it, and links still work after a drag', async ({ page, isMobile }) => {
-    test.skip(!isMobile, 'hamburger menu is mobile only');
-    await page.goto('/');
-    await page.getByRole('button', { name: 'Open menu' }).click();
-    const menu = page.locator('#mobile-menu');
-    await page.waitForTimeout(400); // let the menu finish opening
-
-    await drag(page, await center(menu.getByRole('button', { name: 'Projects', exact: true })), 0, 40, 8);
-    await page.waitForTimeout(600);
-    await expect(menu).toBeVisible();
-
-    await menu.getByRole('button', { name: 'Skills', exact: true }).click();
-    await expect(page).toHaveURL(/\/skills$/);
-  });
 });
 
 test('404 plate can be tugged and springs back to its place', async ({ page, isMobile }) => {

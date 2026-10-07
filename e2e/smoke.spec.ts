@@ -26,10 +26,11 @@ test('resume route embeds the PDF and links back to the portfolio', async ({ pag
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test('desktop nav scrolls to its section', async ({ page, isMobile }) => {
-  test.skip(isMobile, 'desktop header control');
+test('dock scrolls to its section', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Contact' }).click();
+  // The web font swapping in reflows the page; aim the scroll after that
+  await page.evaluate(() => document.fonts.ready);
+  await page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'Contact', exact: true }).click();
   await expect
     .poll(() => page.locator('#contact').evaluate(el => Math.round(el.getBoundingClientRect().top)), { timeout: 5000 })
     .toBeLessThan(120);

@@ -288,16 +288,15 @@ export default function Hero() {
             ))}
           </motion.ul>
 
-          <motion.div className="hero-cta" variants={fadeUp}>
-            <motion.a
+          {/* The floating dock steps aside rather than cover these (Dock.tsx) */}
+          <motion.div className="hero-cta" variants={fadeUp} data-dock-avoid>
+            <a
               href="#projects"
               className="btn btn-primary"
               onClick={scrollToProjects}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
             >
               View Projects
-            </motion.a>
+            </a>
 
             <div className="hero-social">
               {[
@@ -306,18 +305,16 @@ export default function Hero() {
                 { href: 'https://x.com/tabish_ali004',           icon: <FaXTwitter />, label: 'X'        },
                 { href: 'https://youtube.com/@teammavericks-00',    icon: <FaYoutube />,  label: 'YouTube'  },
               ].map(({ href, icon, label }) => (
-                <motion.a
+                <a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="social-icon-btn"
                   aria-label={label}
-                  whileHover={{ scale: 1.12 }}
-                  whileTap={{ scale: 0.9 }}
                 >
                   {icon}
-                </motion.a>
+                </a>
               ))}
             </div>
           </motion.div>
@@ -353,15 +350,13 @@ export default function Hero() {
 
           {/* Navigation */}
           <div className="stack-nav">
-            <motion.button
+            <button
               className="stack-nav-btn"
               onClick={prev}
               aria-label="Previous photo"
-              whileHover={{ scale: 1.12 }}
-              whileTap={{ scale: 0.88 }}
             >
               ←
-            </motion.button>
+            </button>
 
             <div className="stack-dots" role="tablist" aria-label="Select photo">
               {IMAGES.map((_, i) => (
@@ -376,15 +371,13 @@ export default function Hero() {
               ))}
             </div>
 
-            <motion.button
+            <button
               className="stack-nav-btn"
               onClick={next}
               aria-label="Next photo"
-              whileHover={{ scale: 1.12 }}
-              whileTap={{ scale: 0.88 }}
             >
               →
-            </motion.button>
+            </button>
           </div>
         </motion.div>
 

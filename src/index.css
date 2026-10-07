@@ -22,6 +22,24 @@
   --sub-border: #e5e5e5;
   --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
   --card-border: rgba(0, 0, 0, 0.07);
+  /* The one accent, cobalt. Used only where it carries meaning — links,
+     keyboard focus, the active photo, timeline progress, selection. Lighter
+     than the brand's Cobalt Blue Deep (#2c3480), which reads as black on thin
+     lines and small text; links darken to the brand cobalt on hover. */
+  --accent: #4353c9;
+  --accent-hover: #2c3480;
+  --accent-selection: rgba(67, 83, 201, 0.16);
+
+  /* Liquid glass (see the "Liquid glass" section) */
+  --glass-top: rgba(255, 255, 255, 0.78);
+  --glass-bottom: rgba(255, 255, 255, 0.46);
+  --glass-edge: rgba(0, 0, 0, 0.09);
+  --glass-rim-light: rgba(255, 255, 255, 0.95);
+  --glass-rim-shade: rgba(0, 0, 0, 0.07);
+  --glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.04), 0 3px 10px rgba(0, 0, 0, 0.06);
+  --glass-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 22px rgba(0, 0, 0, 0.1);
+  --glass-specular: rgba(255, 255, 255, 1);
+  --glass-specular-strength: 0.9;
 }
 
 [data-theme='dark'] {
@@ -42,6 +60,30 @@
   --sub-border: #1f1f1f;
   --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
   --card-border: rgba(255, 255, 255, 0.06);
+  /* Deep cobalt disappears on near-black; a lighter cobalt keeps AA contrast */
+  --accent: #6b78d6;
+  --accent-hover: #8f9be3;
+  --accent-selection: rgba(107, 120, 214, 0.35);
+
+  --glass-top: rgba(255, 255, 255, 0.11);
+  --glass-bottom: rgba(255, 255, 255, 0.035);
+  --glass-edge: rgba(255, 255, 255, 0.08);
+  --glass-rim-light: rgba(255, 255, 255, 0.24);
+  --glass-rim-shade: rgba(0, 0, 0, 0.45);
+  --glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.4);
+  --glass-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 26px rgba(0, 0, 0, 0.55);
+  --glass-specular: rgba(255, 255, 255, 0.5);
+  --glass-specular-strength: 0.55;
+}
+
+::selection {
+  background: var(--accent-selection);
+}
+
+/* Keyboard focus only (not mouse clicks): a clear cobalt ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 html {
@@ -70,7 +112,6 @@ body {
   z-index: 100;
   background: rgba(255, 255, 255, calc(0.55 + 0.27 * var(--header-p, 0)));
   backdrop-filter: blur(calc(10px + 6px * var(--header-p, 0)));
-  -webkit-backdrop-filter: blur(calc(10px + 6px * var(--header-p, 0)));
 }
 
 [data-theme='dark'] .header {
@@ -123,46 +164,10 @@ body {
   opacity: 0.65;
 }
 
-/* Desktop nav */
-.header-nav {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 28px;
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0;
-  position: relative;
-  transition: color 0.2s;
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  right: 0;
-  height: 1.5px;
-  background: var(--text-primary);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.25s ease;
-}
-
-.nav-link:hover {
-  color: var(--text-primary);
-}
-
-.nav-link:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
+  gap: 12px;
 }
 
 .nav-resume {
@@ -185,87 +190,7 @@ body {
   border-color: var(--btn-primary-bg);
 }
 
-/* Hamburger — mobile only */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  width: 32px;
-  height: 32px;
-}
-
-.hamburger-line {
-  display: block;
-  height: 1.5px;
-  background: var(--text-primary);
-  border-radius: 2px;
-  transform-origin: center;
-  transition: transform 0.25s ease, opacity 0.2s ease;
-}
-
-.hamburger.open .hamburger-line:nth-child(1) {
-  transform: translateY(6.5px) rotate(45deg);
-}
-
-.hamburger.open .hamburger-line:nth-child(2) {
-  opacity: 0;
-  transform: scaleX(0);
-}
-
-.hamburger.open .hamburger-line:nth-child(3) {
-  transform: translateY(-6.5px) rotate(-45deg);
-}
-
-/* Mobile menu */
-.mobile-menu {
-  overflow: hidden;
-  border-top: 1px solid var(--border);
-  background: var(--bg);
-}
-
-.mobile-menu-inner {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 24px 20px;
-  gap: 2px;
-}
-
-.mobile-nav-link {
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 10px 0;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  transition: color 0.2s;
-}
-
-.mobile-nav-link:last-child {
-  border-bottom: none;
-}
-
-.mobile-nav-link:hover {
-  color: var(--text-primary);
-}
-
 @media (max-width: 640px) {
-  .header-nav {
-    display: none;
-  }
-
-  .hamburger {
-    display: flex;
-  }
-
   .header-inner {
     padding: 0 24px;
   }
@@ -582,7 +507,7 @@ body {
 
 .stack-dot.active {
   width: 20px;
-  background: var(--text-primary);
+  background: var(--accent);
 }
 
 /* ── Projects Section ───────────────────────────────────────── */
@@ -707,14 +632,14 @@ body {
 .project-link {
   font-size: 13.5px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--accent);
   text-decoration: none;
   letter-spacing: 0.01em;
   transition: color 0.2s;
 }
 
 .project-link:hover {
-  color: var(--text-muted);
+  color: var(--accent-hover);
 }
 
 /* Image column */
@@ -951,7 +876,7 @@ body {
 
 /* Ink drawn over the track, scaled 1:1 with scroll (Timeline.tsx) */
 .tl-spine-fill {
-  background: var(--text-primary);
+  background: var(--accent);
   transform: scaleY(0);
 }
 
@@ -1010,7 +935,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: var(--text-primary);
+  background: var(--accent);
   transform: scale(0);
 }
 
@@ -1129,7 +1054,7 @@ body {
 
 .contact-link:hover .contact-link-arrow {
   transform: translateX(6px);
-  color: var(--text-primary);
+  color: var(--accent);
 }
 
 /* ── Resume Viewer ──────────────────────────────────────────── */
@@ -1171,7 +1096,8 @@ body {
 
 .footer {
   border-top: 1px solid var(--border);
-  padding: 56px 32px 48px;
+  /* Extra bottom room so the floating dock never covers the footer */
+  padding: 56px 32px 120px;
   width: 100%;
 }
 
@@ -1280,7 +1206,7 @@ body {
   }
 
   .footer {
-    padding: 48px 24px 40px;
+    padding: 48px 24px 112px;
   }
 
   .footer-main {
@@ -1366,7 +1292,7 @@ body {
   }
 
   .footer {
-    padding: 40px 20px 32px;
+    padding: 40px 20px 104px;
   }
 
   .projects-list {
@@ -1486,22 +1412,14 @@ body {
   color: var(--text-primary);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: #2c3480;
+  text-decoration-color: var(--accent);
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
   transition: color 0.2s;
 }
 
 .nf-home-url:hover {
-  color: #2c3480;
-}
-
-[data-theme='dark'] .nf-home-url {
-  text-decoration-color: #6b78d6;
-}
-
-[data-theme='dark'] .nf-home-url:hover {
-  color: #8f9be3;
+  color: var(--accent-hover);
 }
 
 .nf-cta {
@@ -1573,7 +1491,7 @@ body {
 }
 
 .sk-jump-link:hover {
-  color: var(--text-muted);
+  color: var(--accent);
 }
 
 .sk-roles {
@@ -1658,15 +1576,8 @@ body {
 }
 
 /* ── Press feedback ─────────────────────────────────────────── */
-/* Respond the instant a finger or button goes down, not on release */
-.btn:active,
-.nav-resume:active,
-.theme-toggle:active {
-  transform: scale(0.97);
-}
-
-.nav-link:active,
-.mobile-nav-link:active,
+/* Respond the instant a finger or button goes down, not on release.
+   Buttons squish instead (see "Liquid glass"); text links dim. */
 .footer-link:active,
 .contact-link:active,
 .project-link:active,
@@ -1676,13 +1587,307 @@ body {
   opacity: 0.55;
 }
 
+/* ── Dock (floating section navigation, Dock.tsx) ───────────── */
+.dock-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* Clear the iPhone home indicator and Safari's bottom toolbar */
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 90;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  pointer-events: none;
+}
+
+/* Liquid glass: clearer than frosted glass, with a lit top rim, a shaded
+   bottom rim, an inner rim of light, a deep soft shadow, and (in Chromium)
+   refraction at the edges, see liquidGlass.ts */
+.dock {
+  pointer-events: auto;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.32));
+  backdrop-filter: blur(16px) saturate(190%);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 8px 16px -10px rgba(255, 255, 255, 0.9),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    0 16px 40px -6px rgba(0, 0, 0, 0.16);
+}
+
+[data-theme='dark'] .dock {
+  background: linear-gradient(180deg, rgba(60, 60, 60, 0.42), rgba(24, 24, 24, 0.5));
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 8px 16px -10px rgba(255, 255, 255, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    0 18px 44px -6px rgba(0, 0, 0, 0.65);
+}
+
+/* With refraction the glass can be clearer: less blur, the bending does the work */
+.glass-refract .dock {
+  backdrop-filter: url(#liquid-glass) blur(5px) saturate(190%) brightness(1.04);
+}
+
+[data-theme='dark'].glass-refract .dock {
+  backdrop-filter: url(#liquid-glass) blur(5px) saturate(170%) brightness(0.9);
+}
+
+.dock-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.dock-item.is-dot {
+  padding: 0 7px;
+}
+
+.dock-item:hover {
+  color: var(--text-primary);
+}
+
+.dock-item:active {
+  opacity: 0.6;
+}
+
+.dock-item.is-active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* On the tinted droplet in dark mode, the lighter cobalt keeps the label legible */
+[data-theme='dark'] .dock-item.is-active {
+  color: var(--accent-hover);
+}
+
+/* A glass droplet, tinted cobalt, behind the current item; glides between items */
+.dock-active-pill {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.35)),
+    var(--accent-selection);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(67, 83, 201, 0.16),
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 12px -2px rgba(67, 83, 201, 0.22);
+}
+
+[data-theme='dark'] .dock-active-pill {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03)),
+    var(--accent-selection);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    0 4px 14px -2px rgba(107, 120, 214, 0.35);
+}
+
+.dock-label {
+  position: relative;
+}
+
+.dock-dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* ── Liquid glass ───────────────────────────────────────────── */
+/* Buttons as small pieces of glass: a translucent body that blurs what's
+   behind it, a lit top rim and shaded bottom rim, a soft shadow, a highlight
+   that follows the pointer (--mx / --my, set in liquidGlass.ts), and a press
+   that squishes and springs back with a little overshoot. */
+
+.btn-outline,
+.nav-resume,
+.theme-toggle,
+.stack-nav-btn,
+.social-icon-btn {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(180deg, var(--glass-top), var(--glass-bottom));
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim-light),
+    inset 0 -1px 0 var(--glass-rim-shade),
+    var(--glass-shadow);
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn-outline:hover,
+.nav-resume:hover,
+.theme-toggle:hover,
+.stack-nav-btn:hover,
+.social-icon-btn:hover {
+  background: linear-gradient(180deg, var(--glass-top), var(--glass-bottom));
+  color: var(--text-primary);
+  border-color: var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim-light),
+    inset 0 -1px 0 var(--glass-rim-shade),
+    var(--glass-shadow-hover);
+}
+
+/* Ink glass: the primary button stays solid but gets the same depth: a
+   glossy top, a lit rim and a lifted shadow */
+.btn-primary {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--btn-primary-bg) 80%, #fff) 0%, var(--btn-primary-bg) 52%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 6px 18px -4px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.btn-primary:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.18),
+    0 12px 28px -6px rgba(0, 0, 0, 0.38);
+}
+
+[data-theme='dark'] .btn-primary {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 6px 20px -4px rgba(255, 255, 255, 0.12);
+}
+
+/* Specular highlight, under the label so text stays crisp */
+.btn::after,
+.nav-resume::after,
+.theme-toggle::after,
+.stack-nav-btn::after,
+.social-icon-btn::after,
+.dock::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 70px at var(--mx, 50%) var(--my, -30%),
+    var(--glass-specular),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.btn-primary::after {
+  background: radial-gradient(
+    circle 70px at var(--mx, 50%) var(--my, -30%),
+    rgba(255, 255, 255, 0.35),
+    transparent 70%
+  );
+}
+
+[data-theme='dark'] .btn-primary::after {
+  background: radial-gradient(
+    circle 70px at var(--mx, 50%) var(--my, -30%),
+    rgba(255, 255, 255, 1),
+    transparent 70%
+  );
+}
+
+.dock::after {
+  background: radial-gradient(
+    circle 110px at var(--mx, 50%) var(--my, -40%),
+    var(--glass-specular),
+    transparent 70%
+  );
+}
+
+.btn:hover::after,
+.nav-resume:hover::after,
+.theme-toggle:hover::after,
+.stack-nav-btn:hover::after,
+.social-icon-btn:hover::after,
+.dock:hover::after {
+  opacity: var(--glass-specular-strength);
+}
+
+/* Press: squish fast, then spring back on release (the base transition
+   above overshoots slightly) */
+.btn:active,
+.nav-resume:active,
+.theme-toggle:active,
+.stack-nav-btn:active,
+.social-icon-btn:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
+  transition-timing-function: ease-out;
+}
+
 /* ── Reduced transparency / increased contrast ──────────────── */
 @media (prefers-reduced-transparency: reduce) {
+  .btn-outline,
+  .nav-resume,
+  .theme-toggle,
+  .stack-nav-btn,
+  .social-icon-btn {
+    background: var(--bg);
+    backdrop-filter: none;
+    border-color: var(--border);
+  }
+
+  .dock,
+  [data-theme='dark'] .dock,
+  .glass-refract .dock,
+  [data-theme='dark'].glass-refract .dock {
+    background: var(--bg);
+    backdrop-filter: none;
+    border-color: var(--border);
+  }
+
   .header,
   [data-theme='dark'] .header {
     background: var(--bg);
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     border-bottom: 1px solid var(--border);
   }
 
@@ -1692,11 +1897,29 @@ body {
 }
 
 @media (prefers-contrast: more) {
+  .btn-outline,
+  .nav-resume,
+  .theme-toggle,
+  .stack-nav-btn,
+  .social-icon-btn {
+    background: var(--bg);
+    backdrop-filter: none;
+    border-color: var(--text-primary);
+  }
+
+  .dock,
+  [data-theme='dark'] .dock,
+  .glass-refract .dock,
+  [data-theme='dark'].glass-refract .dock {
+    background: var(--bg);
+    backdrop-filter: none;
+    border-color: var(--text-primary);
+  }
+
   .header,
   [data-theme='dark'] .header {
     background: var(--bg);
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     border-bottom: 1px solid var(--text-primary);
   }
 
