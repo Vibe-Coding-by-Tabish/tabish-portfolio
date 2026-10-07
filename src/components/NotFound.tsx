@@ -7,6 +7,16 @@ interface NotFoundProps {
 }
 
 const EMAIL = 'ansaritabishali1@gmail.com';
+
+// The plate can be tugged and springs back with a wobble. With a mouse it moves
+// freely; on touch it's sideways only, so vertical swipes still scroll the page.
+const PLATE_DRAG = {
+  dragConstraints: { top: 0, right: 0, bottom: 0, left: 0 },
+  dragElastic: 0.35,
+  dragTransition: { bounceStiffness: 320, bounceDamping: 9 },
+  whileDrag: { scale: 1.03 },
+} as const;
+
 const MAX_PATH = 80;
 
 const plateVariants: Variants = {
@@ -61,8 +71,16 @@ export default function NotFound({ theme, onGoHome, onViewResume }: NotFoundProp
     <main className="nf" aria-labelledby="nf-title">
       <div className="nf-inner">
 
-        <motion.figure className="nf-plate" variants={plateVariants} initial="hidden" animate="visible">
+        <motion.figure
+          className="nf-plate"
+          variants={plateVariants}
+          initial="hidden"
+          animate="visible"
+          drag={window.matchMedia('(pointer: fine)').matches ? true : 'x'}
+          {...PLATE_DRAG}
+        >
           <img
+            draggable={false}
             src={theme === 'dark' ? '/images/404_dark_theme.webp' : '/images/404_light_theme.webp'}
             alt="Illustration of a DNA double helix with one bent, mismatched base pair labelled 'your URL'. Caption: Fig. 404, a harmless typo. No DNA was harmed."
             width={900}

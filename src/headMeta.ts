@@ -1,4 +1,4 @@
-import { SITE_URL, type PageMeta } from './pageMeta';
+import { SITE_URL, type PageMeta } from './pageMeta.ts';
 
 const escapeAttr = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');

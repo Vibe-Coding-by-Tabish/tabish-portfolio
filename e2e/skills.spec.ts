@@ -58,7 +58,11 @@ test('footer Projects link from the skills page lands on the home projects secti
 test('toggling the theme on the skills page keeps the scroll position', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop theme toggle');
   await page.goto('/skills');
+  // Web fonts swapping in reflow the text, and scroll anchoring then nudges
+  // scrollY by itself; measure only once that has happened
+  await page.evaluate(() => document.fonts.ready);
   await page.locator('#ai-ml-engineering').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
   const before = await page.evaluate(() => window.scrollY);
   expect(before).toBeGreaterThan(200);
 

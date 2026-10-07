@@ -2,8 +2,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
-import { PAGE_META } from './src/pageMeta'
-import { withPageMeta } from './src/headMeta'
+import { PAGE_META } from './src/pageMeta.ts'
+import { withPageMeta } from './src/headMeta.ts'
 
 // Bakes each route's title, description and canonical URL into real HTML, so
 // crawlers and link previews see them without running JavaScript:

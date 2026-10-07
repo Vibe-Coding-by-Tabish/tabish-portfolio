@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, type Variants, useReducedMotion } from 'framer-motion';
+import {
+  motion, animate, useMotionValue, useTransform, useReducedMotion,
+  type MotionValue, type PanInfo, type Variants,
+} from 'framer-motion';
 import { FaLinkedin, FaGithub, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
@@ -85,12 +88,111 @@ const SLOT_Z: Record<Slot, number> = {
   'front': 10, 'back-right': 5, 'back-left': 3, 'hidden': 0,
 };
 
-const CARD_TRANSITION = { duration: 0.55, ease: 'easeInOut' } as const;
+// Critically damped: cards settle into their slots without overshoot
+const CARD_SPRING = { type: 'spring', bounce: 0, duration: 0.5 } as const;
+// A released card carries the finger's momentum, so it may overshoot a little
+const RELEASE_SPRING = { type: 'spring', bounce: 0.25, duration: 0.45 } as const;
+const THROW_SPRING = { type: 'spring', bounce: 0, duration: 0.35 } as const;
 const AUTO_CYCLE_MS = 7000;
 
-// A drag past this distance (or flicked faster than this) advances the stack
-const SWIPE_DISTANCE_PX = 60;
-const SWIPE_VELOCITY = 450;
+// A drag whose projected resting point passes this distance changes the photo
+const COMMIT_PX = 80;
+// How far a thrown card travels before tucking in behind the stack
+const THROW_PX = 300;
+// Tilt while dragging, as if the card were held near its bottom edge
+const MAX_TILT_DEG = 8;
+
+// Apple's momentum projection (Designing Fluid Interfaces): where a flick
+// released at `velocity` px/s would come to rest if left to decelerate
+const project = (velocity: number, decelerationRate = 0.995) =>
+  ((velocity / 1000) * decelerationRate) / (1 - decelerationRate);
+
+interface StackCardProps {
+  src: string;
+  alt: string;
+  index: number;
+  slot: Slot;
+  // Live drag offset of whichever card is in front; back cards lift with it
+  frontDragX: MotionValue<number>;
+  reduceMotion: boolean;
+  onDragStart: () => void;
+  onRelease: (direction: -1 | 0 | 1) => void;
+}
+
+function StackCard({ src, alt, index, slot, frontDragX, reduceMotion, onDragStart, onRelease }: StackCardProps) {
+  const isFront = slot === 'front';
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-MAX_TILT_DEG, MAX_TILT_DEG]);
+  const [throwing, setThrowing] = useState(false);
+
+  // Mirror this card's drag to the stack while it's in front
+  useEffect(() => {
+    if (!isFront) return;
+    return x.on('change', v => frontDragX.set(v));
+  }, [isFront, x, frontDragX]);
+
+  // The card that will come forward rises as the front card is pulled away:
+  // dragging left reveals the back-right card, dragging right the back-left
+  const liftWhenLeft = useTransform(frontDragX, [-COMMIT_PX, 0], [1.05, 1]);
+  const liftWhenRight = useTransform(frontDragX, [0, COMMIT_PX], [1, 1.05]);
+  const noLift = useMotionValue(1);
+  const lift = slot === 'back-right' ? liftWhenLeft : slot === 'back-left' ? liftWhenRight : noLift;
+
+  const handleDragEnd = (_: PointerEvent, info: PanInfo) => {
+    const velocity = info.velocity.x;
+    const projected = x.get() + project(velocity);
+    // Dragging left brings the next photo, right the previous one
+    const direction = projected < -COMMIT_PX ? -1 : projected > COMMIT_PX ? 1 : 0;
+    onRelease(direction);
+
+    if (direction === 0) {
+      animate(x, 0, { ...RELEASE_SPRING, velocity });
+    } else if (reduceMotion) {
+      x.set(0);
+    } else {
+      // Carry the flick off the stack, then tuck in behind it
+      setThrowing(true);
+      animate(x, direction * THROW_PX, {
+        ...THROW_SPRING,
+        velocity,
+        onComplete: () => {
+          setThrowing(false);
+          animate(x, 0, CARD_SPRING);
+        },
+      });
+    }
+  };
+
+  return (
+    <motion.div
+      className="stack-card"
+      // A thrown card stays on top until it has cleared the stack
+      style={{ zIndex: throwing ? SLOT_Z.front + 1 : SLOT_Z[slot] }}
+      animate={SLOT_TRANSFORM[slot]}
+      transition={CARD_SPRING}
+    >
+      <motion.div
+        className="stack-card-inner"
+        style={{ x, rotate, scale: lift }}
+        drag={isFront ? 'x' : false}
+        dragMomentum={false}
+        onDragStart={onDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <img
+          src={src}
+          alt={alt}
+          draggable={false}
+          decoding="async"
+          // The first card is the hero's LCP candidate; the rest sit in
+          // the same box, so they load too — just behind it in the queue
+          loading={index === 0 ? 'eager' : 'lazy'}
+          fetchPriority={index === 0 ? 'high' : 'low'}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
 
 // ── Data ──────────────────────────────────────────────────────
 
@@ -108,6 +210,16 @@ export default function Hero() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const frontDragX = useMotionValue(0);
+
+  const handleRelease = (direction: -1 | 0 | 1) => {
+    setPaused(false);
+    if (direction === 0) return;
+    if (direction === -1) next();
+    else prev();
+    // The lifted card hands over smoothly to its new front-slot animation
+    animate(frontDragX, 0, CARD_SPRING);
+  };
 
   const next = useCallback(
     () => setActiveIndex(i => (i + 1) % IMAGES.length),
@@ -224,44 +336,19 @@ export default function Hero() {
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
-            {IMAGES.map(({ src, alt }, i) => {
-              const slot = getSlot(i, activeIndex, IMAGES.length);
-              const transform = SLOT_TRANSFORM[slot];
-              const isFront = slot === 'front';
-              return (
-                <motion.div
-                  key={i}
-                  className="stack-card"
-                  style={{ zIndex: SLOT_Z[slot] }}
-                  animate={transform}
-                  transition={CARD_TRANSITION}
-                  // Only the top card is draggable; constraints snap it back to
-                  // the front slot's x: 0 so `animate` stays in charge afterwards
-                  drag={isFront ? 'x' : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.5}
-                  dragMomentum={false}
-                  onDragStart={() => setPaused(true)}
-                  onDragEnd={(_, info) => {
-                    setPaused(false);
-                    const { offset, velocity } = info;
-                    if (offset.x < -SWIPE_DISTANCE_PX || velocity.x < -SWIPE_VELOCITY) next();
-                    else if (offset.x > SWIPE_DISTANCE_PX || velocity.x > SWIPE_VELOCITY) prev();
-                  }}
-                >
-                  <img
-                    src={src}
-                    alt={alt}
-                    draggable={false}
-                    decoding="async"
-                    // The first card is the hero's LCP candidate; the rest sit in
-                    // the same box, so they load too — just behind it in the queue
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    fetchPriority={i === 0 ? 'high' : 'low'}
-                  />
-                </motion.div>
-              );
-            })}
+            {IMAGES.map(({ src, alt }, i) => (
+              <StackCard
+                key={i}
+                src={src}
+                alt={alt}
+                index={i}
+                slot={getSlot(i, activeIndex, IMAGES.length)}
+                frontDragX={frontDragX}
+                reduceMotion={!!prefersReducedMotion}
+                onDragStart={() => setPaused(true)}
+                onRelease={handleRelease}
+              />
+            ))}
           </div>
 
           {/* Navigation */}

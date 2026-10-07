@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  motion, AnimatePresence, animate, useMotionValue, useScroll, useTransform,
+  type MotionStyle, type PanInfo,
+} from 'framer-motion';
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -10,6 +13,12 @@ interface HeaderProps {
   onNavigateHome?: (section?: string) => void;
 }
 
+// Pushing the open menu up by this much (after momentum) closes it
+const MENU_CLOSE_PX = 48;
+// Apple's momentum projection, tuned snappier than scrolling for a short menu
+const project = (velocity: number, decelerationRate = 0.99) =>
+  ((velocity / 1000) * decelerationRate) / (1 - decelerationRate);
+
 const NAV_LINKS = [
   { label: 'Projects',     href: '#projects'     },
   { label: 'Publications', href: '#publications' },
@@ -17,15 +26,12 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Header({ theme, onToggleTheme, onViewResume, onViewSkills, onNavigateHome }: HeaderProps) {
-  const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Detect scroll to apply blur/shadow
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  // 0 at the top of the page, 1 once content has scrolled well under the
+  // header; CSS reads it to firm up the material and fade in the edge shadow
+  const { scrollY } = useScroll();
+  const solidity = useTransform(scrollY, [0, 80], [0, 1]);
 
   // Close mobile menu when resizing to desktop
   useEffect(() => {
@@ -50,6 +56,34 @@ export default function Header({ theme, onToggleTheme, onViewResume, onViewSkill
   const onMenuExitComplete = () => {
     pendingScroll.current?.();
     pendingScroll.current = null;
+    menuY.set(0);
+  };
+
+  // The open menu can be pushed back up into the header with a finger
+  const menuY = useMotionValue(0);
+  const menuOpacity = useTransform(menuY, [-120, 0], [0.2, 1]);
+  const draggedMenu = useRef(false);
+
+  // These animations replace framer's own snap-back to the drag constraints
+  const onMenuDragEnd = (_: PointerEvent, info: PanInfo) => {
+    const velocity = info.velocity.y;
+    if (menuY.get() + project(velocity) < -MENU_CLOSE_PX) {
+      // Keep travelling the way the finger was going while the menu collapses
+      animate(menuY, -120, { type: 'spring', bounce: 0, duration: 0.3, velocity });
+      setMobileOpen(false);
+    } else {
+      animate(menuY, 0, { type: 'spring', bounce: 0.25, duration: 0.4, velocity });
+    }
+    // The click (if any) fires right after pointerup; forget the drag after it
+    setTimeout(() => { draggedMenu.current = false; }, 0);
+  };
+
+  // A drag that ends over a link must not also count as tapping it
+  const swallowClickAfterDrag = (e: React.MouseEvent) => {
+    if (!draggedMenu.current) return;
+    draggedMenu.current = false;
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const scrollTo = (href: string) =>
@@ -74,7 +108,8 @@ export default function Header({ theme, onToggleTheme, onViewResume, onViewSkill
 
   return (
     <motion.header
-      className={`header${scrolled ? ' scrolled' : ''}`}
+      className="header"
+      style={{ '--header-p': solidity } as MotionStyle}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -134,7 +169,18 @@ export default function Header({ theme, onToggleTheme, onViewResume, onViewSkill
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
           >
-            <div className="mobile-menu-inner">
+            <motion.div
+              className="mobile-menu-inner"
+              style={{ y: menuY, opacity: menuOpacity }}
+              drag="y"
+              // Free to move up (closing); resists being pulled down
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 1, bottom: 0.12 }}
+              dragMomentum={false}
+              onDragStart={() => { draggedMenu.current = true; }}
+              onDragEnd={onMenuDragEnd}
+              onClickCapture={swallowClickAfterDrag}
+            >
               {NAV_LINKS.map(({ label, href }) => (
                 <button
                   key={label}
@@ -156,7 +202,7 @@ export default function Header({ theme, onToggleTheme, onViewResume, onViewSkill
               >
                 {theme === 'light' ? '◐ Dark mode' : '◑ Light mode'}
               </button>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import Hero from './components/Hero';
 import Header from './components/Header';
 import Projects from './components/Projects';
@@ -128,45 +128,49 @@ export default function App() {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      {page === 'resume' ? (
-        <ResumeViewer
-          key="resume"
-          theme={theme}
-          onBack={() => navigate('home')}
-          onToggleTheme={toggleTheme}
-        />
-      ) : page === 'notfound' || page === 'skills' ? (
-        <motion.div
-          key={page}
-          ref={startAtTop}
-          exit={{ opacity: 0, transition: { duration: 0.15 } }}
-        >
-          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
-          <div style={{ paddingTop: 64 }}>
-            {page === 'skills'
-              ? <Skills onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
-              : <NotFound theme={theme} onGoHome={() => goHome()} onViewResume={() => navigate('resume')} />}
-            <Footer onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          key="home"
-          ref={landOnPendingSection}
-          exit={{ opacity: 0, transition: { duration: 0.15 } }}
-        >
-          <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
-          <div style={{ paddingTop: 64 }}>
-            <Hero />
-            <Projects />
-            <Timeline />
-            <Publications />
-            <Contact />
-            <Footer onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    // Visitors who ask their OS for reduced motion get fades instead of
+    // slides, scales and springs, site-wide
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence mode="wait">
+        {page === 'resume' ? (
+          <ResumeViewer
+            key="resume"
+            theme={theme}
+            onBack={() => navigate('home')}
+            onToggleTheme={toggleTheme}
+          />
+        ) : page === 'notfound' || page === 'skills' ? (
+          <motion.div
+            key={page}
+            ref={startAtTop}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          >
+            <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
+            <div style={{ paddingTop: 64 }}>
+              {page === 'skills'
+                ? <Skills onViewResume={() => navigate('resume')} onNavigateHome={goHome} />
+                : <NotFound theme={theme} onGoHome={() => goHome()} onViewResume={() => navigate('resume')} />}
+              <Footer onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} onNavigateHome={goHome} />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="home"
+            ref={landOnPendingSection}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          >
+            <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
+            <div style={{ paddingTop: 64 }}>
+              <Hero />
+              <Projects />
+              <Timeline />
+              <Publications />
+              <Contact />
+              <Footer onViewResume={() => navigate('resume')} onViewSkills={() => navigate('skills')} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MotionConfig>
   );
 }
