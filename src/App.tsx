@@ -56,7 +56,9 @@ export default function App() {
   // Where to land once the home page mounts after leaving the 404 page
   const pendingSection = useRef<string | null>(null);
   const homeSection = useActiveSection(HOME_SECTIONS, page === 'home');
-  const dockActive: DockTarget | null = page === 'skills' ? 'skills' : homeSection;
+  // Above the first section of the home page, the visitor is "Home"
+  const dockActive: DockTarget | null =
+    page === 'skills' ? 'skills' : page === 'home' ? homeSection ?? 'home' : null;
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -123,7 +125,10 @@ export default function App() {
   }, []);
 
   const selectFromDock = (id: DockTarget) => {
-    if (id === 'skills') navigate('skills');
+    if (id === 'home') {
+      if (page === 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
+      else goHome();
+    } else if (id === 'skills') navigate('skills');
     else if (page === 'home') document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
     else goHome(id);
   };

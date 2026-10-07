@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
-export type DockTarget = '#projects' | '#publications' | 'skills' | '#contact';
+export type DockTarget = 'home' | '#projects' | '#publications' | 'skills' | '#contact';
 
 const ITEMS: { id: DockTarget; label: string }[] = [
+  { id: 'home',          label: 'Home'     },
   { id: '#projects',     label: 'Projects' },
   { id: '#publications', label: 'Papers'   },
   { id: 'skills',        label: 'Skills'   },

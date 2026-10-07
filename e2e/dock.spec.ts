@@ -11,7 +11,7 @@ async function scrollToSection(page: Page, id: string) {
 
 test('at the top of the page the dock is open with every section', async ({ page }) => {
   await page.goto('/');
-  for (const name of ['Projects', 'Papers', 'Skills', 'Contact']) {
+  for (const name of ['Home', 'Projects', 'Papers', 'Skills', 'Contact']) {
     await expect(labelled(page, name)).toBeVisible();
   }
 });
@@ -26,7 +26,7 @@ test('while reading, it shows only the current section, in the accent colour', a
   await expect(current).toHaveCSS('color', /rgb\((67, 83, 201|143, 155, 227)\)/);
   // The others collapse to dots
   await expect(labelled(page, 'Projects')).toHaveCount(0);
-  await expect(dock(page).locator('.dock-dot')).toHaveCount(3);
+  await expect(dock(page).locator('.dock-dot')).toHaveCount(4);
 });
 
 test('the current section follows the scroll', async ({ page }) => {
@@ -100,12 +100,25 @@ test('the resume viewer has no dock', async ({ page }) => {
   await expect(dock(page)).toHaveCount(0);
 });
 
-test('the dock fits a small phone without horizontal scroll', async ({ page, isMobile }) => {
+for (const width of [320, 360, 375]) {
+  test(`the open dock fits a ${width}px phone`, async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'phone width');
+    await page.setViewportSize({ width, height: 740 });
+    await page.goto('/');
+    // Measure with the real font: the fallback is narrower and hides overflow
+    await page.evaluate(() => document.fonts.ready);
+    await expect(labelled(page, 'Contact')).toBeVisible();
+    await page.waitForTimeout(600);
+    const bar = (await dock(page).boundingBox())!;
+    expect(bar.x).toBeGreaterThanOrEqual(8);
+    expect(bar.x + bar.width).toBeLessThanOrEqual(width - 8);
+  });
+}
+
+test('the dock causes no horizontal scroll', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phone width');
   await page.goto('/');
-  const bar = await dock(page).boundingBox();
-  expect(bar!.x).toBeGreaterThanOrEqual(0);
-  expect(bar!.x + bar!.width).toBeLessThanOrEqual(375);
+  await page.evaluate(() => document.fonts.ready);
   const [sw, cw] = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
   expect(sw).toBeLessThanOrEqual(cw);
 });
@@ -125,4 +138,32 @@ test.describe('short laptop screen', () => {
     await expect(wrap).not.toHaveAttribute('inert');
     await expect(labelled(page, 'Contact').or(dock(page).locator('.dock-dot').first())).toBeVisible();
   });
+});
+
+test('in the hero, below the top of the page, the current item is Home', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => window.scrollTo(0, 150));
+  await expect(labelled(page, 'Home')).toHaveAttribute('aria-current', 'location');
+  await expect(dock(page).locator('.dock-dot')).toHaveCount(4);
+});
+
+test('Home from further down the home page scrolls back to the top', async ({ page }) => {
+  await page.goto('/');
+  await scrollToSection(page, '#publications');
+  await dock(page).locator('.dock-item.is-dot').first().click();
+  await labelled(page, 'Home').click();
+  await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 }).toBe(0);
+});
+
+test('Home from the skills page goes to the top of the home page', async ({ page }) => {
+  await page.goto('/skills');
+  await page.evaluate(() => document.fonts.ready);
+  await page.locator('#data-science').evaluate(el => el.scrollIntoView());
+  await expect(labelled(page, 'Skills')).toHaveAttribute('aria-current', 'location');
+  await dock(page).locator('.dock-item.is-dot').first().click();
+  await labelled(page, 'Home').click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tabish Ali Ansari.');
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });

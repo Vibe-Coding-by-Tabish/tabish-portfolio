@@ -16,7 +16,7 @@ test('the refraction map tracks the dock size as it opens and closes', async ({ 
   // Scroll into a section so the dock collapses to its compact form
   await page.evaluate(() => document.fonts.ready);
   await page.locator('#publications').evaluate(el => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 100));
-  await expect(page.locator('.dock-dot')).toHaveCount(3);
+  await expect(page.locator('.dock-dot')).toHaveCount(4);
   await expect.poll(async () => Math.abs((await mapWidth()) - (await dockWidth()))).toBeLessThanOrEqual(1);
 });
 

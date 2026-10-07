@@ -8,7 +8,7 @@ const sectionTop = (page: Page, selector: string) =>
 async function openSkillsFromDock(page: Page) {
   const dock = page.getByRole('navigation', { name: 'Sections' });
   // Compact while reading: the first tap opens it, the second picks Skills
-  await expect(dock.locator('.dock-dot')).toHaveCount(3);
+  await expect(dock.locator('.dock-dot')).toHaveCount(4);
   await dock.locator('.dock-item.is-dot').first().click();
   await dock.getByRole('button', { name: 'Skills', exact: true }).click();
 }

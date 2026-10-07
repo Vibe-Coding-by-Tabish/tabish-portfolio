@@ -30,14 +30,17 @@
   --accent-hover: #2c3480;
   --accent-selection: rgba(67, 83, 201, 0.16);
 
-  /* Liquid glass (see the "Liquid glass" section) */
-  --glass-top: rgba(255, 255, 255, 0.78);
-  --glass-bottom: rgba(255, 255, 255, 0.46);
-  --glass-edge: rgba(0, 0, 0, 0.09);
-  --glass-rim-light: rgba(255, 255, 255, 0.95);
-  --glass-rim-shade: rgba(0, 0, 0, 0.07);
-  --glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.04), 0 3px 10px rgba(0, 0, 0, 0.06);
-  --glass-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 22px rgba(0, 0, 0, 0.1);
+  /* Liquid glass (see the "Liquid glass" section). White glass vanishes on a
+     white page, so light mode tints it with the faintest cobalt: a cool body,
+     cobalt-shaded edges and a cobalt-tinted shadow give it something to read
+     against, while the rims stay bright white. */
+  --glass-top: rgba(246, 247, 255, 0.92);
+  --glass-bottom: rgba(226, 230, 252, 0.72);
+  --glass-edge: rgba(67, 83, 201, 0.17);
+  --glass-rim-light: rgba(255, 255, 255, 1);
+  --glass-rim-shade: rgba(67, 83, 201, 0.16);
+  --glass-shadow: 0 1px 1px rgba(44, 52, 128, 0.07), 0 4px 14px -2px rgba(67, 83, 201, 0.16);
+  --glass-shadow-hover: 0 2px 3px rgba(44, 52, 128, 0.08), 0 10px 26px -4px rgba(67, 83, 201, 0.26);
   --glass-specular: rgba(255, 255, 255, 1);
   --glass-specular-strength: 0.9;
 }
@@ -1612,16 +1615,16 @@ body {
   align-items: center;
   gap: 2px;
   padding: 5px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.32));
+  background: linear-gradient(180deg, rgba(244, 246, 255, 0.74), rgba(218, 224, 252, 0.56));
   backdrop-filter: blur(16px) saturate(190%);
-  border: 1px solid rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(67, 83, 201, 0.16);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 8px 16px -10px rgba(255, 255, 255, 0.9),
-    0 2px 6px rgba(0, 0, 0, 0.06),
-    0 16px 40px -6px rgba(0, 0, 0, 0.16);
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(67, 83, 201, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    inset 0 8px 16px -10px rgba(255, 255, 255, 1),
+    0 2px 6px rgba(44, 52, 128, 0.08),
+    0 18px 44px -8px rgba(67, 83, 201, 0.3);
 }
 
 [data-theme='dark'] .dock {
@@ -1690,14 +1693,15 @@ body {
 .dock-active-pill {
   position: absolute;
   inset: 0;
+  /* On the cobalt-tinted bar, a brighter, whiter lens so it reads as raised */
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.35)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.72)),
     var(--accent-selection);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(67, 83, 201, 0.16),
-    0 1px 2px rgba(0, 0, 0, 0.06),
-    0 4px 12px -2px rgba(67, 83, 201, 0.22);
+    inset 0 -1px 0 rgba(67, 83, 201, 0.2),
+    0 1px 2px rgba(44, 52, 128, 0.1),
+    0 4px 14px -2px rgba(67, 83, 201, 0.3);
 }
 
 [data-theme='dark'] .dock-active-pill {
@@ -1720,6 +1724,31 @@ body {
   height: 5px;
   border-radius: 50%;
   background: var(--text-muted);
+}
+
+/* Five labels on a small phone: tighten so the open dock fits 320px screens */
+@media (max-width: 420px) {
+  .dock {
+    gap: 0;
+    padding: 4px;
+  }
+
+  .dock-item {
+    min-height: 34px;
+    padding: 0 9px;
+    font-size: 12.5px;
+  }
+
+  .dock-item.is-dot {
+    padding: 0 6px;
+  }
+}
+
+@media (max-width: 340px) {
+  .dock-item {
+    padding: 0 7px;
+    font-size: 12px;
+  }
 }
 
 /* ── Liquid glass ───────────────────────────────────────────── */
