@@ -1,12 +1,12 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion, type PanInfo, type Variants } from 'framer-motion';
+import { motion, useReducedMotion, type PanInfo, type Variants } from 'framer-motion';
 import { EMAIL, OPTIONS, optionById, optionFromHash, type OptionId, type SkillOption } from './skills/data';
 import Glyph from './skills/Glyph';
 import './skills/skills.css';
 
 // Each centrepiece is its own chunk, fetched when its option is opened
 const PipelineStage = lazy(() => import('./skills/PipelineStage'));
-const DeployStage = lazy(() => import('./skills/DeployStage'));
+const SoftwareStage = lazy(() => import('./skills/SoftwareStage'));
 const LineupStage = lazy(() => import('./skills/LineupStage'));
 const InteropStage = lazy(() => import('./skills/InteropStage'));
 
@@ -33,7 +33,6 @@ const itemVariants: Variants = {
 const stageVariants: Variants = {
   enter: (dir: number) => ({ opacity: 0, x: dir * 56 }),
   center: { opacity: 1, x: 0, transition: SPRING },
-  exit: (dir: number) => ({ opacity: 0, x: dir * -56, transition: { duration: 0.18 } }),
 };
 
 const mailto = (o: SkillOption) =>
@@ -92,7 +91,7 @@ function OptionProof({ option }: { option: SkillOption }) {
 function Centerpiece({ id, onNavigateHome }: { id: OptionId; onNavigateHome: (s: string) => void }) {
   const piece: Record<OptionId, ReactNode> = {
     'bioinformatics-pipelines': <PipelineStage />,
-    'software-engineering': <DeployStage />,
+    'software-engineering': <SoftwareStage />,
     'ai-data-engineering': <LineupStage onOpen={onNavigateHome} />,
     'health-data-integration': <InteropStage />,
   };
@@ -245,61 +244,59 @@ export default function Skills({ onViewResume, onNavigateHome }: SkillsProps) {
 
         <div ref={anchorRef} className="sk-anchor" />
 
-        <AnimatePresence mode="wait" custom={dir} initial={false}>
-          {option ? (
-            <motion.section
-              key={option.id}
-              className="sk-stage"
-              data-option={option.id}
-              aria-labelledby={`${option.id}-statement`}
-              custom={dir}
-              variants={stageVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              // Phones: swipe sideways between options; vertical swipes still scroll
-              drag={coarse && !reduced ? 'x' : false}
-              dragDirectionLock
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.22}
-              onDragEnd={onSwipe}
-            >
-              <div className="sk-stage-head" id={`${option.id}-statement`}>
-                <OptionCopy option={option} headingLevel={2} />
-              </div>
+        {/* No exit animations: an exit interrupted by Back or a quick second
+            pick could leave the old stage stuck, invisible, in the page */}
+        {option ? (
+          <motion.section
+            key={option.id}
+            className="sk-stage"
+            data-option={option.id}
+            aria-labelledby={`${option.id}-statement`}
+            custom={dir}
+            variants={stageVariants}
+            initial="enter"
+            animate="center"
+            // Phones: swipe sideways between options; vertical swipes still scroll
+            drag={coarse && !reduced ? 'x' : false}
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.22}
+            onDragEnd={onSwipe}
+          >
+            <div className="sk-stage-head" id={`${option.id}-statement`}>
+              <OptionCopy option={option} headingLevel={2} />
+            </div>
 
-              <Centerpiece id={option.id} onNavigateHome={onNavigateHome} />
+            <Centerpiece id={option.id} onNavigateHome={onNavigateHome} />
 
-              <OptionProof option={option} />
+            <OptionProof option={option} />
 
-              <div className="sk-cta">
-                <a className="btn btn-primary" href={mailto(option)}>Let&rsquo;s talk about {option.talk} →</a>
-                <button type="button" className="btn btn-outline" onClick={onViewResume}>View my resume</button>
-                {next && (
-                  <button type="button" className="sk-next" onClick={() => select(next.id)}>
-                    Next: {next.name} <span aria-hidden="true">→</span>
-                  </button>
-                )}
-              </div>
-              {coarse && <p className="sk-swipe-hint">Swipe sideways for the next one</p>}
-            </motion.section>
-          ) : (
-            <motion.div
-              key="overview"
-              className="sk-overview"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.15 } }}
-            >
-              <p className="sk-outro-text">Hiring, or looking for a consultant? I&rsquo;d like to hear about it.</p>
-              <div className="hero-cta">
-                <button className="btn btn-primary" onClick={() => onNavigateHome('#contact')}>Get in touch →</button>
-                <button className="btn btn-outline" onClick={onViewResume}>View my resume</button>
-                <button className="btn btn-outline" onClick={() => onNavigateHome('#projects')}>See projects</button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            <div className="sk-cta">
+              <a className="btn btn-primary" href={mailto(option)}>Let&rsquo;s talk about {option.talk} →</a>
+              <button type="button" className="btn btn-outline" onClick={onViewResume}>View my resume</button>
+              {next && (
+                <button type="button" className="sk-next" onClick={() => select(next.id)}>
+                  Next: {next.name} <span aria-hidden="true">→</span>
+                </button>
+              )}
+            </div>
+            {coarse && <p className="sk-swipe-hint">Swipe sideways for the next one</p>}
+          </motion.section>
+        ) : (
+          <motion.div
+            key="overview"
+            className="sk-overview"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <p className="sk-outro-text">Hiring, or looking for a consultant? I&rsquo;d like to hear about it.</p>
+            <div className="hero-cta">
+              <button className="btn btn-primary" onClick={() => onNavigateHome('#contact')}>Get in touch →</button>
+              <button className="btn btn-outline" onClick={onViewResume}>View my resume</button>
+              <button className="btn btn-outline" onClick={() => onNavigateHome('#projects')}>See projects</button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Every option's words stay in the page for search engines and
             screen-reader skimming, even while only one is on show */}

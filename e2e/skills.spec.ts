@@ -2,7 +2,7 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 
 const OPTIONS = [
   { id: 'bioinformatics-pipelines', name: 'Bioinformatics Pipelines (Nextflow)', statement: 'Pipelines that pick up where they failed.' },
-  { id: 'software-engineering', name: 'Software Engineering', statement: 'Three hours of setup. Now one command.' },
+  { id: 'software-engineering', name: 'Software Engineering', statement: 'Typed. Secured. Shipped.' },
   { id: 'ai-data-engineering', name: 'AI & Data Engineering', statement: 'Don’t take my word for it. Try them.' },
   { id: 'health-data-integration', name: 'Health Data Integration (HL7 v2 / FHIR)', statement: 'HL7 v2 in. FHIR out.' },
 ];
@@ -129,18 +129,56 @@ test('pipelines: a failed step resumes from the cache', async ({ page }) => {
   await expect(page.getByText('Completed. 5 processes on HealthOmics.')).toBeVisible({ timeout: 10_000 });
 });
 
+test('software: the ETL endpoint validates its contract before any work', async ({ page }) => {
+  await page.goto('/skills#software-engineering');
+  // On first sight a valid request goes through every stage
+  await expect(page.getByText('200 OK', { exact: true })).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator('.etl-step.is-done')).toHaveCount(5);
+
+  await tap(page.getByRole('radio', { name: 'Missing field' }));
+  await tap(page.getByRole('button', { name: 'Send request' }));
+  await expect(page.getByText('422 Unprocessable Entity')).toBeVisible();
+  await expect(page.locator('.etl-json').last()).toContainText('"loc": ["body", "dataset_id"]');
+  // Rejected at validation: nothing is extracted or loaded
+  await expect(page.locator('.etl-step.is-failed')).toHaveText('✕Validate');
+  await expect(page.locator('.etl-step.is-done')).toHaveCount(1);
+
+  await tap(page.getByRole('radio', { name: 'No token' }));
+  await tap(page.getByRole('button', { name: 'Send request' }));
+  await expect(page.getByText('401 Unauthorized')).toBeVisible();
+
+  await tap(page.getByRole('button', { name: /Show the route/ }));
+  await expect(page.locator('.etl-code')).toContainText('Depends(verify_token)');
+});
+
+test('software: Okta machine-to-machine tokens are checked for scope and expiry', async ({ page }) => {
+  await page.goto('/skills#software-engineering');
+  await tap(page.getByRole('tab', { name: /Okta M2M/ }));
+  const verdict = page.locator('.okta-verdict');
+  await expect(verdict).toContainText('200 OK', { timeout: 10_000 });
+  await expect(page.locator('.okta-claims')).toContainText('"scp"');
+
+  await tap(page.getByRole('radio', { name: 'Wrong scope' }));
+  await expect(verdict).toContainText('403 Forbidden', { timeout: 10_000 });
+  await tap(page.getByRole('radio', { name: 'Expired' }));
+  await expect(page.locator('.okta-claims .is-bad')).toContainText('1 hour ago');
+  await tap(page.getByRole('radio', { name: 'No token' }));
+  await expect(verdict).toContainText('401 Unauthorized', { timeout: 10_000 });
+  await expect(page.getByText('(skipped: no token requested)')).toHaveCount(2);
+});
+
 test('software: genie.sh deploys in one command and resumes after Ctrl+C', async ({ page }) => {
   await page.goto('/skills#software-engineering');
-  await tap(page.getByRole('radio', { name: 'prod' }));
-  await tap(page.getByRole('button', { name: 'Deploy prod' }));
+  await tap(page.getByRole('tab', { name: /genie\.sh/ }));
+  await tap(page.getByRole('button', { name: 'Deploy uat' }));
   // Let a few phases run before interrupting
   await expect(page.getByText(/\[ 3\/14\]/)).toBeVisible();
   await page.getByRole('button', { name: 'Ctrl + C' }).click();
   await expect(page.getByText(/Interrupted at phase \d+\/14/)).toBeVisible();
-  await tap(page.getByRole('button', { name: 'Resume prod deploy' }));
+  await tap(page.getByRole('button', { name: 'Resume uat deploy' }));
   await expect(page.getByText(/Resuming at phase/)).toBeVisible();
-  await expect(page.getByText('✓ prod is live. One command, no manual steps.')).toBeVisible({ timeout: 10_000 });
-  await expect(page.getByText('1 of 5 environments deployed')).toBeVisible();
+  await expect(page.getByText('✓ uat is live. One command, no manual steps.')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByLabel('uat is live')).toBeAttached();
 });
 
 test('health data: tap a field to see where it lands, and broken messages are rejected', async ({ page }) => {

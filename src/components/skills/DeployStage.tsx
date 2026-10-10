@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useSettledInView } from '../demos/useSettledInView';
 import { useTimers } from '../demos/useTimers';
 
-// A simplified replay of genie.sh: pick an environment and deploy it in one
-// command. Interrupt it and run again, and it resumes from the phase it
-// stopped at. The phase list is a plain-English summary of the real script.
+// A simplified replay of genie.sh deploying one environment in one command.
+// Interrupt it and run again, and it resumes from the phase it stopped at.
+// The phase list is a plain-English summary of the real script.
 
-const ENVS = ['dev', 'qa', 'uat', 'staging', 'prod'] as const;
-type Env = (typeof ENVS)[number];
+const ENV = 'uat';
+const COMMAND = `./genie.sh --env ${ENV}`;
 
 const PHASES = [
   'Preflight checks',
@@ -31,7 +30,7 @@ const PHASES = [
 const ASSERTIONS = [
   'nginx keeps the URI path on named locations',
   'Entra token version matches the API',
-  'cases_users primary key is as expected',
+  'primary keys match the expected schema',
 ];
 
 const PHASE_MS = 150;
@@ -41,23 +40,18 @@ interface Line {
   tone?: 'ok' | 'warn' | 'dim' | 'live';
 }
 
-export default function DeployStage() {
+export default function DeployStage({ active }: { active: boolean }) {
   const reduced = useReducedMotion() ?? false;
-  const rootRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
-  const inView = useSettledInView(rootRef, 0.4);
 
-  const [env, setEnv] = useState<Env>('uat');
   const [lines, setLines] = useState<Line[]>([]);
   const [phase, setPhase] = useState(0);
   const [running, setRunning] = useState(false);
-  const [resumeAt, setResumeAt] = useState<Record<string, number>>({});
-  const [live, setLive] = useState<Env[]>([]);
+  const [resumeAt, setResumeAt] = useState(0);
+  const [live, setLive] = useState(false);
   const [typed, setTyped] = useState('');
   const timers = useTimers();
-  const touched = useRef(false);
-
-  const command = `./genie.sh --env ${env}`;
+  const typedOnce = useRef(false);
 
   // Keep the newest line in view inside the terminal, never the page
   useEffect(() => {
@@ -65,15 +59,26 @@ export default function DeployStage() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [lines]);
 
+  // The first time the tab is shown, type the command so it is ready to run
+  useEffect(() => {
+    if (!active || typedOnce.current) return;
+    typedOnce.current = true;
+    if (reduced) {
+      timers.after(0, () => setTyped(COMMAND));
+      return;
+    }
+    for (let i = 1; i <= COMMAND.length; i++) timers.after(150 + i * 40, () => setTyped(COMMAND.slice(0, i)));
+  }, [active, reduced, timers]);
+
   const push = (l: Line) => setLines(prev => [...prev, l]);
 
   const deploy = () => {
     timers.clear();
-    const target = env;
-    const from = resumeAt[target] ?? 0;
+    const from = resumeAt;
     setRunning(true);
-    setTyped(command);
-    setLines([{ text: `$ ${command}`, tone: 'dim' }]);
+    setLive(false);
+    setTyped(COMMAND);
+    setLines([{ text: `$ ${COMMAND}`, tone: 'dim' }]);
     if (from > 0) push({ text: `Resuming at phase ${from + 1}/14. Phases 1–${from} already done.`, tone: 'warn' });
     setPhase(from);
     const ms = reduced ? 0 : PHASE_MS;
@@ -92,10 +97,10 @@ export default function DeployStage() {
       }
     }
     timers.after(t + ms * 2, () => {
-      push({ text: `✓ ${target} is live. One command, no manual steps.`, tone: 'live' });
+      push({ text: `✓ ${ENV} is live. One command, no manual steps.`, tone: 'live' });
       setRunning(false);
-      setResumeAt(r => ({ ...r, [target]: 0 }));
-      setLive(l => (l.includes(target) ? l : [...l, target]));
+      setResumeAt(0);
+      setLive(true);
     });
   };
 
@@ -103,54 +108,17 @@ export default function DeployStage() {
   const interrupt = () => {
     timers.clear();
     setRunning(false);
-    setResumeAt(r => ({ ...r, [env]: phase }));
+    setResumeAt(phase);
     push({ text: `^C  Interrupted at phase ${phase}/14. Run again to resume.`, tone: 'warn' });
   };
 
-  // First sight: type the command so it is ready to run
-  useEffect(() => {
-    if (!inView || touched.current || reduced) {
-      if (inView && reduced) timers.after(0, () => setTyped(command));
-      return;
-    }
-    for (let i = 1; i <= command.length; i++) {
-      timers.after(200 + i * 45, () => { if (!touched.current) setTyped(command.slice(0, i)); });
-    }
-    // command is fixed for this first pass
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView]);
-
-  const chooseEnv = (e: Env) => {
-    if (running) return;
-    setEnv(e);
-    setTyped(`./genie.sh --env ${e}`);
-  };
-
-  const allLive = live.length === ENVS.length;
-
   return (
-    <div ref={rootRef} className="dp" onPointerDownCapture={() => { touched.current = true; }}>
-      <div className="dp-envs" role="radiogroup" aria-label="Environment">
-        {ENVS.map(e => (
-          <button
-            key={e}
-            type="button"
-            role="radio"
-            aria-checked={env === e}
-            className={`dp-env${env === e ? ' is-on' : ''}${live.includes(e) ? ' is-live' : ''}`}
-            onClick={() => chooseEnv(e)}
-            disabled={running && env !== e}
-          >
-            <span className="dp-lamp" aria-hidden="true" />
-            {e === 'qa' || e === 'uat' ? e.toUpperCase() : e}
-          </button>
-        ))}
-      </div>
-
+    <div className="dp">
       <div className="dp-term">
         <div className="dp-chrome">
           <span className="dp-lights" aria-hidden="true"><i /><i /><i /></span>
-          <span className="dp-title">genie.sh — {env}</span>
+          <span className="dp-title">genie.sh — {ENV}</span>
+          <span className={`dp-env-lamp${live ? ' is-live' : ''}`} aria-label={live ? `${ENV} is live` : `${ENV} not deployed yet`} />
         </div>
         <div ref={screenRef} className="dp-screen" aria-live="polite">
           {lines.length === 0 && (
@@ -181,27 +149,22 @@ export default function DeployStage() {
           <button type="button" className="dp-btn dp-btn--stop" onClick={interrupt}>Ctrl + C</button>
         ) : (
           <button type="button" className="dp-btn" onClick={deploy}>
-            {resumeAt[env] ? `Resume ${env} deploy` : `Deploy ${env}`}
+            {resumeAt ? `Resume ${ENV} deploy` : live ? `Deploy ${ENV} again` : `Deploy ${ENV}`}
           </button>
         )}
-        <p className="dp-status">
-          {allLive ? 'All five environments green.' : `${live.length} of 5 environments deployed`}
-        </p>
-      </div>
-
-      <div className="dp-compare" aria-label="Setup time compared">
-        <div className="dp-bar">
-          <span className="dp-bar-label">Manual setup</span>
-          <span className="dp-bar-track"><span className="dp-bar-fill is-manual" /></span>
-          <span className="dp-bar-value">~3 hours</span>
-        </div>
-        <div className="dp-bar">
-          <span className="dp-bar-label">genie.sh</span>
-          <span className="dp-bar-track"><span className="dp-bar-fill is-genie" /></span>
-          <span className="dp-bar-value">1 command</span>
+        <div className="dp-compare" aria-label="Setup time compared">
+          <div className="dp-bar">
+            <span className="dp-bar-label">By hand</span>
+            <span className="dp-bar-track"><span className="dp-bar-fill is-manual" /></span>
+            <span className="dp-bar-value">~3 hours</span>
+          </div>
+          <div className="dp-bar">
+            <span className="dp-bar-label">genie.sh</span>
+            <span className="dp-bar-track"><span className="dp-bar-fill is-genie" /></span>
+            <span className="dp-bar-value">1 command</span>
+          </div>
         </div>
       </div>
-      <p className="pl-note">A simplified replay of the script&rsquo;s 14 phases.</p>
     </div>
   );
 }
