@@ -1,0 +1,798 @@
+/* ── ADAPT demo ────────────────────────────────────────────────
+   ADAPT's own look: a bright clinical page with a violet brand, the blue
+   Analyze button and the purple stage pill from the deployed app. It stays
+   light in both site themes, as the product does. Layout follows the demo's
+   width: scan and result side by side when there is room, stacked when not. */
+
+.adapt {
+  --ad-bg: #f7f7fb;
+  --ad-card: #ffffff;
+  --ad-line: #e6e6ef;
+  --ad-text: #1d1d2b;
+  --ad-dim: #5d5f73;
+  --ad-faint: #8b8da0;
+  --ad-violet: #7c3aed;
+  --ad-violet-soft: #f3e8ff;
+  --ad-magenta: #b62ed1;
+  --ad-blue: #2563eb;
+  --ad-green: #22c55e;
+
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--ad-bg);
+  color: var(--ad-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #dedde8;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(30, 20, 60, 0.06), 0 18px 50px -14px rgba(76, 29, 149, 0.28);
+  text-align: left;
+}
+
+[data-theme='dark'] .adapt {
+  border-color: #2a2833;
+  box-shadow: 0 18px 60px -10px rgba(0, 0, 0, 0.75);
+}
+
+.adapt button {
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.adapt :focus-visible {
+  outline: 2px solid var(--ad-violet);
+  outline-offset: 2px;
+}
+
+/* ── Browser chrome and brand ───────────────────────────────── */
+
+.adapt-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  background: #ececf3;
+  border-bottom: 1px solid #dedde8;
+  min-width: 0;
+}
+
+.adapt-dots {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.adapt-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d4d3de;
+}
+
+.adapt-url {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--ad-dim);
+  background: #fff;
+  border-radius: 7px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adapt-badge {
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ad-violet);
+  background: var(--ad-violet-soft);
+  border: 1px solid #e3cffd;
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.adapt-badge-short {
+  display: none;
+}
+
+.adapt-brandbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  color: #fff;
+  background: linear-gradient(100deg, #5b21b6, var(--ad-violet) 45%, var(--ad-magenta));
+}
+
+.adapt-logo {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 3px, transparent 3.5px);
+}
+
+.adapt-brand {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.adapt-brand-sub {
+  font-size: 12px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* ── Body (stacked by default) ──────────────────────────────── */
+
+.adapt-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+}
+
+.adapt-stage,
+.adapt-panel {
+  min-width: 0;
+}
+
+/* Drop zone and the sample tray */
+.adapt-drop {
+  width: 100%;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 2px dashed #cfcde0;
+  border-radius: 12px;
+  background: var(--ad-card);
+  color: var(--ad-text);
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.adapt-drop:hover,
+.adapt-drop.is-over {
+  border-color: var(--ad-violet);
+  background: #faf6ff;
+}
+
+.adapt-drop.is-over {
+  transform: scale(1.015);
+}
+
+.adapt-drop-icon {
+  font-size: 22px;
+  color: var(--ad-violet);
+}
+
+.adapt-drop-title {
+  font-weight: 600;
+}
+
+.adapt-drop-sub {
+  font-size: 12.5px;
+  color: var(--ad-faint);
+}
+
+.adapt-tray {
+  margin-top: 12px;
+}
+
+.adapt-sample {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--ad-line);
+  border-radius: 12px;
+  background: var(--ad-card);
+  color: var(--ad-text);
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(30, 20, 60, 0.06);
+  position: relative;
+}
+
+@media (pointer: fine) {
+  .adapt-sample {
+    cursor: grab;
+  }
+
+  .adapt-sample:active {
+    cursor: grabbing;
+  }
+}
+
+.adapt-sample img {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.adapt-sample-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+}
+
+.adapt-sample-meta span {
+  color: var(--ad-faint);
+}
+
+/* Loaded scan */
+.adapt-scan {
+  background: var(--ad-card);
+  border: 1px solid var(--ad-line);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adapt-scan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.adapt-remove {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--ad-line);
+  background: transparent;
+  color: var(--ad-dim);
+}
+
+.adapt-remove:hover {
+  color: var(--ad-text);
+  border-color: #cfcde0;
+}
+
+.adapt-frame,
+.adapt-compare {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.adapt-frame img,
+.adapt-compare img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* The scanning beam while the model runs */
+.adapt-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 34%;
+  top: -34%;
+  background: linear-gradient(to bottom, transparent, rgba(124, 58, 237, 0.25) 70%, rgba(196, 181, 253, 0.95) 98%, transparent);
+  animation: adapt-sweep 1.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes adapt-sweep {
+  to { top: 100%; }
+}
+
+.adapt-analyze {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 22px;
+  min-height: 44px;
+  background: var(--ad-blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 14px -4px rgba(37, 99, 235, 0.6);
+  transition: transform 0.15s, background-color 0.2s, opacity 0.2s;
+}
+
+.adapt-analyze:hover {
+  background: #1d4ed8;
+}
+
+.adapt-analyze:active,
+.adapt-analyze.is-pressing {
+  transform: scale(0.95);
+}
+
+.adapt-analyze:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.adapt-spinner {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: adapt-spin 0.8s linear infinite;
+}
+
+@keyframes adapt-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Before / after: the heatmap is clipped from the right by the handle */
+.adapt-compare {
+  cursor: ew-resize;
+  /* Horizontal drags move the handle, vertical swipes still scroll */
+  touch-action: pan-y;
+}
+
+.adapt-tag {
+  position: absolute;
+  top: 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 2px 7px;
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.adapt-tag--left {
+  left: 8px;
+}
+
+.adapt-tag--right {
+  right: 8px;
+}
+
+.adapt-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.adapt-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ad-violet);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+.adapt-caption {
+  font-size: 12.5px;
+  color: var(--ad-dim);
+  text-align: center;
+}
+
+/* ── Pipeline and result ────────────────────────────────────── */
+
+.adapt-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adapt-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.adapt-steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ad-faint);
+  background: var(--ad-card);
+  border: 1px solid var(--ad-line);
+  border-radius: 9px;
+  padding: 7px 9px;
+  transition: color 0.25s, border-color 0.25s;
+}
+
+.adapt-step-mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: #efeff5;
+  color: var(--ad-faint);
+  transition: background-color 0.25s, color 0.25s;
+}
+
+.adapt-steps li.is-active {
+  color: var(--ad-text);
+  border-color: #d8c4fb;
+}
+
+.adapt-steps li.is-active .adapt-step-mark {
+  background: var(--ad-violet-soft);
+  color: var(--ad-violet);
+  animation: adapt-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes adapt-pulse {
+  50% { box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15); }
+}
+
+.adapt-steps li.is-done {
+  color: var(--ad-text);
+}
+
+.adapt-steps li.is-done .adapt-step-mark {
+  background: var(--ad-violet);
+  color: #fff;
+}
+
+.adapt-result {
+  background: var(--ad-card);
+  border: 1px solid var(--ad-line);
+  border-radius: 12px;
+  padding: 14px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adapt-waiting {
+  margin: auto;
+  max-width: 260px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ad-faint);
+}
+
+.adapt-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ad-faint);
+}
+
+.adapt-stage-name {
+  align-self: flex-start;
+  font-weight: 600;
+  color: var(--ad-magenta);
+  background: #fbefff;
+  border-radius: 8px;
+  padding: 4px 10px;
+  line-height: 1.4;
+}
+
+.adapt-stage-name span {
+  font-weight: 700;
+}
+
+.adapt-confidence {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  row-gap: 5px;
+}
+
+.adapt-confidence-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.adapt-meter {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: 999px;
+  background: #ececf3;
+  overflow: hidden;
+}
+
+.adapt-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4ade80, var(--ad-green));
+}
+
+/* Disease stages: a track from normal to Alzheimer's */
+.adapt-scale {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 4px;
+}
+
+.adapt-track {
+  position: absolute;
+  top: 15px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 3px;
+  border-radius: 3px;
+  background: #e4e3ee;
+}
+
+.adapt-track-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transform-origin: left;
+  background: linear-gradient(90deg, #a78bfa, var(--ad-magenta));
+}
+
+.adapt-stop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 6px 0;
+  min-height: 44px;
+  color: var(--ad-faint);
+}
+
+.adapt-stop-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #cfcde0;
+  transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.adapt-stop-id {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.adapt-stop.is-predicted .adapt-stop-dot {
+  border-color: var(--ad-magenta);
+  background: var(--ad-magenta);
+  box-shadow: 0 0 0 4px rgba(182, 46, 209, 0.18);
+}
+
+.adapt-stop.is-predicted {
+  color: var(--ad-magenta);
+}
+
+.adapt-stop.is-shown .adapt-stop-dot {
+  transform: scale(1.25);
+}
+
+.adapt-stop.is-shown:not(.is-predicted) .adapt-stop-dot {
+  border-color: var(--ad-violet);
+}
+
+.adapt-stop.is-shown .adapt-stop-id {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.adapt-stage-note {
+  font-size: 12.5px;
+  color: var(--ad-dim);
+  line-height: 1.5;
+}
+
+.adapt-stage-note b {
+  color: var(--ad-text);
+  font-weight: 600;
+}
+
+.adapt-model {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.adapt-model div {
+  background: var(--ad-card);
+  border: 1px solid var(--ad-line);
+  border-radius: 9px;
+  padding: 7px 10px;
+}
+
+.adapt-model dt {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ad-faint);
+}
+
+.adapt-model dd {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.adapt-foot {
+  font-size: 11.5px;
+  color: var(--ad-faint);
+  text-align: center;
+  padding: 0 14px 12px;
+}
+
+/* ── Stacked: compact pipeline and model line ───────────────── */
+
+@container (max-width: 719px) {
+  .adapt-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .adapt-steps li {
+    flex: 1;
+    justify-content: center;
+    border: 0;
+    background: none;
+    padding: 0;
+    position: relative;
+  }
+
+  /* A connector between the marks */
+  .adapt-steps li + li::before {
+    content: '';
+    position: absolute;
+    right: 50%;
+    width: 100%;
+    height: 2px;
+    background: #e4e3ee;
+  }
+
+  .adapt-steps li.is-done + li::before {
+    background: var(--ad-violet);
+  }
+
+  .adapt-step-mark {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+    position: relative;
+  }
+
+  .adapt-step-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .adapt-step-now {
+    margin-top: -4px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ad-dim);
+  }
+
+  .adapt-model {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 14px;
+  }
+
+  .adapt-model div {
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+
+  .adapt-model dd {
+    font-size: 12.5px;
+  }
+}
+
+/* ── Wide: scan beside the result ───────────────────────────── */
+
+@container (min-width: 720px) {
+  .adapt-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    padding: 18px;
+    min-height: 470px;
+  }
+
+  .adapt-drop {
+    min-height: 300px;
+  }
+
+  .adapt-step-now {
+    display: none;
+  }
+
+  .adapt-model {
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: auto;
+  }
+
+  .adapt-result {
+    min-height: 220px;
+  }
+}
+
+@container (max-width: 520px) {
+  .adapt-brand-sub,
+  .adapt-badge-long {
+    display: none;
+  }
+
+  .adapt-badge-short {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adapt-beam,
+  .adapt-spinner,
+  .adapt-steps li.is-active .adapt-step-mark {
+    animation: none;
+  }
+}

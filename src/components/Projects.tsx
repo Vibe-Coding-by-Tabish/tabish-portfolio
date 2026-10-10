@@ -3,6 +3,7 @@ import { motion, useInView, type Variants } from 'framer-motion';
 
 // Each demo is its own chunk, fetched as the visitor scrolls toward it
 const GraphLMDemo = lazy(() => import('./demos/GraphLMDemo'));
+const ADAPTDemo = lazy(() => import('./demos/ADAPTDemo'));
 
 // ── Variants ──────────────────────────────────────────────────
 
@@ -78,7 +79,7 @@ interface Project {
   build: string;
   tech: readonly string[];
   /** A live, interactive demo replaces the screenshot */
-  demo?: 'graphlm';
+  demo?: 'graphlm' | 'adapt';
   image?: string;
   github?: string;
   live?: string;
@@ -105,11 +106,11 @@ const PROJECTS: Project[] = [
     id: 'adapt',
     title: 'ADAPT: Alzheimer\'s Disease Prediction System',
     story:
-      'Classifies the stage of Alzheimer\'s disease from an MRI scan, and every prediction traces back to the exact data and model weights that produced it.',
+      'Classifies the stage of Alzheimer\'s disease from a brain MRI and shows where the model looked. The demo replays a real run: load the scan, analyze it, then drag across it to compare the MRI with its Grad-CAM heatmap.',
     build:
       'End-to-end MRI classification pipeline built on VGG-19, with DVC for data and model versioning and MLflow for experiment tracking. Containerised with Docker; FastAPI backend on Google App Engine and React frontend on Netlify.',
     tech: ['Python', 'VGG-19', 'DVC', 'MLflow', 'Docker', 'FastAPI', 'React'],
-    image: '/projects/adapt.webp',
+    demo: 'adapt',
     github: 'https://github.com/DA-workshop-101/Alzheimer-Stages-Classification-using-Deep-Learning',
     live: 'https://adapt-webapp-007.netlify.app/',
     youtube: 'https://www.youtube.com/watch?v=U3JPrEf1Syo',
@@ -128,7 +129,7 @@ const PROJECTS: Project[] = [
   },
 ];
 
-const DEMOS = { graphlm: GraphLMDemo } as const;
+const DEMOS = { graphlm: GraphLMDemo, adapt: ADAPTDemo } as const;
 
 // ── Pieces ────────────────────────────────────────────────────
 
@@ -141,11 +142,11 @@ function DemoSlot({ demo, title }: { demo: NonNullable<Project['demo']>; title: 
   return (
     <div ref={ref} className="project-demo" aria-label={`${title}: interactive demo`} role="region">
       {near && (
-        <Suspense fallback={<div className="project-demo-loading" />}>
+        <Suspense fallback={<div className={`project-demo-loading project-demo-loading--${demo}`} />}>
           <Demo />
         </Suspense>
       )}
-      {!near && <div className="project-demo-loading" />}
+      {!near && <div className={`project-demo-loading project-demo-loading--${demo}`} />}
     </div>
   );
 }

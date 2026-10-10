@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useSettledInView } from './useSettledInView';
 import {
   ANSWERS, EDGES, NODES, SOURCE, answerById, routeQuestion,
   type Answer, type GraphNode, type QuestionId,
@@ -268,7 +269,7 @@ function Graph({ indexed, enabled, lit, selected, onSelect, reduced }: GraphProp
 export default function GraphLMDemo() {
   const reduced = useReducedMotion() ?? false;
   const rootRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(rootRef, { once: true, amount: 0.35 });
+  const inView = useSettledInView(rootRef);
 
   const [indexed, setIndexed] = useState(false);
   const [toast, setToast] = useState(false);

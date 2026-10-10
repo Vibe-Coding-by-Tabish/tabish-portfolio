@@ -693,10 +693,16 @@ body {
 
 /* Holds the demo's space until its chunk arrives, so nothing below jumps */
 .project-demo-loading {
-  height: 563px;
+  height: 567px;
   border-radius: 14px;
   background: #0c0e0f;
   border: 1px solid #1d2324;
+}
+
+.project-demo-loading--adapt {
+  height: 591px;
+  background: #f7f7fb;
+  border-color: #dedde8;
 }
 
 .project-build summary {
@@ -1344,6 +1350,10 @@ body {
 /* The demo stacks its panes below about this width */
 @media (max-width: 767px) {
   .project-demo-loading {
+    height: 800px;
+  }
+
+  .project-demo-loading.project-demo-loading--adapt {
     height: 740px;
   }
 }
