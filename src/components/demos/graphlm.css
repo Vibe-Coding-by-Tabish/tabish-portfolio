@@ -1,0 +1,782 @@
+/* ── GraphLM demo ──────────────────────────────────────────────
+   GraphLM's own look (near-black, mint, monospace) in both site themes: it
+   reads as a separate product sitting inside the portfolio. Layout follows
+   the demo's own width, not the viewport: three panes side by side when there
+   is room, stacked (graph above chat) when there isn't. */
+
+.glm {
+  --glm-bg: #0c0e0f;
+  --glm-pane: #101314;
+  --glm-raise: #161a1b;
+  --glm-line: #222829;
+  --glm-text: #d9dfdc;
+  --glm-dim: #8a948f;
+  --glm-faint: #57605c;
+  --glm-mint: #22e3a2;
+  --glm-mint-deep: #0f9e6f;
+  --glm-ink: #03140d;
+  --glm-warn: #f2b84b;
+  --glm-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--glm-bg);
+  color: var(--glm-text);
+  font-family: var(--glm-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  border: 1px solid #1d2324;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 18px 50px -12px rgba(8, 40, 28, 0.45);
+  text-align: left;
+}
+
+[data-theme='dark'] .glm {
+  box-shadow: 0 0 0 1px rgba(34, 227, 162, 0.06), 0 18px 60px -10px rgba(0, 0, 0, 0.8);
+}
+
+.glm button,
+.glm input {
+  font: inherit;
+  color: inherit;
+}
+
+.glm button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glm :focus-visible {
+  outline: 2px solid var(--glm-mint);
+  outline-offset: 2px;
+}
+
+/* ── Window bar ─────────────────────────────────────────────── */
+
+.glm-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--glm-line);
+  background: #0a0c0d;
+  min-width: 0;
+}
+
+.glm-logo {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, var(--glm-mint) 0 2px, transparent 2.5px),
+    radial-gradient(circle at 15% 20%, var(--glm-mint) 0 1.6px, transparent 2px),
+    radial-gradient(circle at 85% 25%, var(--glm-mint) 0 1.6px, transparent 2px),
+    radial-gradient(circle at 25% 85%, var(--glm-mint) 0 1.6px, transparent 2px),
+    radial-gradient(circle at 80% 80%, var(--glm-mint) 0 1.6px, transparent 2px);
+}
+
+.glm-brand {
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: -0.01em;
+}
+
+.glm-brand b {
+  color: var(--glm-mint);
+}
+
+.glm-crumb {
+  color: var(--glm-faint);
+  font-size: 11.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.glm-badge {
+  margin-left: auto;
+  flex: none;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--glm-mint);
+  border: 1px solid rgba(34, 227, 162, 0.35);
+  background: rgba(34, 227, 162, 0.07);
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ── Panes (stacked by default) ─────────────────────────────── */
+
+.glm-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.glm-pane {
+  position: relative;
+  min-width: 0;
+  background: var(--glm-pane);
+}
+
+.glm-pane + .glm-pane {
+  border-top: 1px solid var(--glm-line);
+}
+
+.glm-pane-title {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--glm-faint);
+  padding: 10px 14px 0;
+}
+
+.glm-pane-title span {
+  color: var(--glm-dim);
+}
+
+/* Sources: one row on a phone */
+.glm-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding-bottom: 10px;
+}
+
+.glm-sources .glm-pane-title {
+  width: 100%;
+}
+
+.glm-source {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 0 10px;
+  padding: 8px 10px;
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--glm-line);
+  background: var(--glm-raise);
+  text-align: left;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.glm-source.is-on {
+  border-color: rgba(34, 227, 162, 0.4);
+}
+
+.glm-file {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #d9473b;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.glm-source-name {
+  font-size: 12.5px;
+}
+
+.glm-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--glm-faint);
+  margin-left: 4px;
+  display: grid;
+  place-items: center;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.glm-source.is-on .glm-check {
+  background: var(--glm-mint);
+  border-color: var(--glm-mint);
+}
+
+.glm-source.is-on .glm-check::after {
+  content: '';
+  width: 8px;
+  height: 4px;
+  border-left: 2px solid var(--glm-ink);
+  border-bottom: 2px solid var(--glm-ink);
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.glm-source:active {
+  transform: scale(0.97);
+}
+
+.glm-hint {
+  flex: 1 1 140px;
+  font-size: 11px;
+  color: var(--glm-faint);
+  padding: 0 14px 0 10px;
+  line-height: 1.4;
+}
+
+/* ── Graph ──────────────────────────────────────────────────── */
+
+.glm-canvas {
+  display: flex;
+  flex-direction: column;
+}
+
+.glm-graph {
+  position: relative;
+  height: 250px;
+  margin: 6px 6px 8px;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(34, 227, 162, 0.06), transparent 65%),
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.2px) 0 0 / 18px 18px;
+  /* Vertical swipes over the graph still scroll the page */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.glm-graph svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.glm-graph.is-disabled svg {
+  opacity: 0.18;
+  filter: grayscale(1);
+  pointer-events: none;
+}
+
+.glm-graph-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--glm-dim);
+  text-align: center;
+  padding: 0 24px;
+}
+
+.glm-graph-empty.is-warning {
+  color: var(--glm-warn);
+}
+
+.glm-spinner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(34, 227, 162, 0.25);
+  border-top-color: var(--glm-mint);
+  animation: glm-spin 0.8s linear infinite;
+}
+
+@keyframes glm-spin {
+  to { transform: rotate(360deg); }
+}
+
+.glm-edge line {
+  stroke: #3a4442;
+  stroke-width: 1.2;
+  transition: stroke 0.25s ease, opacity 0.25s ease;
+}
+
+.glm-arrow {
+  fill: #3a4442;
+}
+
+.glm-arrow.is-lit {
+  fill: var(--glm-mint);
+}
+
+/* While an answer's path is lit, everything off the path recedes */
+.glm-graph.has-lit .glm-edge:not(.is-lit) line {
+  opacity: 0.35;
+}
+
+.glm-edge.is-near line {
+  stroke: #7d8a86;
+}
+
+.glm-edge .glm-edge-trace {
+  stroke: var(--glm-mint);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 3px rgba(34, 227, 162, 0.6));
+}
+
+.glm-rel {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  fill: #9fb5ad;
+  paint-order: stroke;
+  stroke: var(--glm-pane);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.glm-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.glm-hit {
+  fill: transparent;
+}
+
+.glm-pill {
+  fill: var(--glm-mint);
+  transition: fill 0.25s ease, opacity 0.25s ease;
+}
+
+.glm-label {
+  font-size: 12px;
+  fill: var(--glm-ink);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.glm-graph[data-mode='compact'] .glm-label {
+  font-size: 11px;
+}
+
+.glm-dot {
+  fill: var(--glm-mint);
+  opacity: 0.75;
+}
+
+.glm-graph.has-lit .glm-node:not(.is-lit):not(.is-selected) .glm-pill,
+.glm-graph.has-lit .glm-node:not(.is-lit):not(.is-selected) .glm-dot {
+  opacity: 0.3;
+}
+
+.glm-node.is-lit .glm-pill {
+  filter: drop-shadow(0 0 6px rgba(34, 227, 162, 0.55));
+}
+
+.glm-pill-flash {
+  fill: #ffffff;
+  pointer-events: none;
+}
+
+.glm-node.is-selected .glm-pill {
+  fill: #e4ecff;
+}
+
+.glm-node:hover .glm-pill {
+  fill: #5cf0bd;
+}
+
+.glm-node.is-selected:hover .glm-pill {
+  fill: #e4ecff;
+}
+
+.glm-node:focus-visible .glm-pill,
+.glm-node:focus-visible .glm-dot {
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+/* ── Toast and entity details (over the graph) ──────────────── */
+
+.glm-toast {
+  position: absolute;
+  right: 14px;
+  bottom: 16px;
+  font-size: 11px;
+  color: var(--glm-text);
+  background: #1b2021;
+  border: 1px solid var(--glm-line);
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.glm-toast span {
+  color: var(--glm-mint);
+}
+
+.glm-detail {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 14px;
+  background: rgba(22, 26, 27, 0.96);
+  border: 1px solid #2c3536;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.glm-detail-kind {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--glm-faint);
+}
+
+.glm-detail-name {
+  font-weight: 700;
+  color: var(--glm-mint);
+}
+
+.glm-detail-text {
+  font-size: 12px;
+  color: var(--glm-dim);
+  line-height: 1.45;
+}
+
+.glm-detail-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.glm-detail-ask {
+  font-size: 12px;
+  color: var(--glm-ink) !important;
+  background: var(--glm-mint);
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 11px;
+  min-height: 34px;
+}
+
+.glm-detail-ask:active {
+  transform: scale(0.97);
+}
+
+.glm-detail-close {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--glm-line);
+  background: transparent;
+  color: var(--glm-dim) !important;
+}
+
+/* ── Chat ───────────────────────────────────────────────────── */
+
+.glm-chat {
+  display: flex;
+  flex-direction: column;
+}
+
+.glm-messages {
+  position: relative;
+  padding: 12px 14px 4px;
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.glm-empty {
+  margin: auto;
+  text-align: center;
+  max-width: 300px;
+  padding: 10px 0;
+}
+
+.glm-empty-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: rgba(34, 227, 162, 0.1);
+  color: var(--glm-mint);
+  margin-bottom: 10px;
+}
+
+.glm-empty-title {
+  font-weight: 700;
+}
+
+.glm-empty-sub {
+  font-size: 12px;
+  color: var(--glm-dim);
+}
+
+.glm-q {
+  align-self: flex-end;
+  max-width: 85%;
+  background: var(--glm-mint);
+  color: var(--glm-ink);
+  border-radius: 12px 12px 3px 12px;
+  padding: 7px 11px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.glm-a {
+  align-self: flex-start;
+  max-width: 100%;
+  background: var(--glm-raise);
+  border: 1px solid var(--glm-line);
+  border-radius: 12px 12px 12px 3px;
+  padding: 9px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.glm-status {
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  color: var(--glm-mint);
+  opacity: 0.85;
+}
+
+.glm-status[data-status='searching'] {
+  color: var(--glm-dim);
+  animation: glm-pulse 1s ease-in-out infinite;
+}
+
+@keyframes glm-pulse {
+  50% { opacity: 0.4; }
+}
+
+.glm-a-text {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--glm-text);
+}
+
+.glm-a-text.is-warning {
+  color: var(--glm-warn);
+}
+
+.glm-cites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.glm-cite {
+  font-size: 10.5px;
+  color: var(--glm-mint);
+  text-decoration: none;
+  border: 1px solid rgba(34, 227, 162, 0.3);
+  border-radius: 999px;
+  padding: 3px 9px;
+  transition: background-color 0.2s;
+}
+
+.glm-cite:hover {
+  background: rgba(34, 227, 162, 0.1);
+}
+
+.glm-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* One swipeable row of suggested questions */
+.glm-suggest {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.glm-suggest::-webkit-scrollbar {
+  display: none;
+}
+
+.glm-chip {
+  flex: none;
+  font-size: 12px;
+  white-space: nowrap;
+  border: 1px solid #2b3334;
+  background: var(--glm-raise);
+  color: var(--glm-text) !important;
+  border-radius: 999px;
+  padding: 8px 13px;
+  min-height: 38px;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.15s;
+}
+
+.glm-chip:hover {
+  border-color: rgba(34, 227, 162, 0.5);
+}
+
+.glm-chip.is-active {
+  border-color: var(--glm-mint);
+  background: rgba(34, 227, 162, 0.1);
+  color: var(--glm-mint) !important;
+}
+
+.glm-chip:active {
+  transform: scale(0.96);
+}
+
+.glm-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 12px 12px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid #2b3334;
+  border-radius: 12px;
+  background: #0b0d0e;
+  transition: border-color 0.2s;
+}
+
+.glm-input:focus-within {
+  border-color: rgba(34, 227, 162, 0.6);
+}
+
+.glm-input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  /* 16px on phones: anything smaller makes iOS Safari zoom on focus */
+  font-size: 16px;
+  padding: 6px 0;
+}
+
+.glm-input input::placeholder {
+  color: var(--glm-faint);
+}
+
+.glm-input button {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 0;
+  background: var(--glm-mint);
+  color: var(--glm-ink) !important;
+  font-weight: 700;
+  font-size: 16px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.glm-input button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.glm-input button:not(:disabled):active {
+  transform: scale(0.92);
+}
+
+/* ── Wide: GraphLM's three-pane workspace ───────────────────── */
+
+@container (min-width: 720px) {
+  .glm-body {
+    display: grid;
+    grid-template-columns: 168px minmax(0, 1fr) minmax(0, 1.2fr);
+    grid-template-areas: 'sources chat canvas';
+    height: 520px;
+  }
+
+  .glm-pane + .glm-pane {
+    border-top: 0;
+  }
+
+  .glm-sources {
+    grid-area: sources;
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    border-right: 1px solid var(--glm-line);
+    gap: 10px;
+  }
+
+  .glm-source {
+    margin: 0 10px;
+  }
+
+  .glm-hint {
+    flex: none;
+    padding: 0 14px;
+  }
+
+  .glm-chat {
+    grid-area: chat;
+    border-right: 1px solid var(--glm-line);
+    min-height: 0;
+  }
+
+  .glm-messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #2b3334 transparent;
+  }
+
+  .glm-canvas {
+    grid-area: canvas;
+    min-height: 0;
+  }
+
+  .glm-graph {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+
+  .glm-input input {
+    font-size: 13px;
+  }
+
+  .glm-detail {
+    left: auto;
+    width: min(300px, calc(100% - 24px));
+  }
+}
+
+/* Narrow: the badge shortens and the breadcrumb goes, so the title fits */
+.glm-badge-short {
+  display: none;
+}
+
+@container (max-width: 520px) {
+  .glm-crumb {
+    display: none;
+  }
+
+  .glm-badge-long {
+    display: none;
+  }
+
+  .glm-badge-short {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glm-spinner,
+  .glm-status[data-status='searching'] {
+    animation: none;
+  }
+}

@@ -645,6 +645,100 @@ body {
   color: var(--accent-hover);
 }
 
+/* Demo card: heading, then the live demo full width, then the details */
+.project-card--demo {
+  display: flex;
+  flex-direction: column;
+  /* Stretch, not the card's centring: the demo sizes from its container
+     (container queries), so centred it would shrink to zero width */
+  align-items: stretch;
+  gap: 28px;
+}
+
+.project-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 60px;
+  row-gap: 10px;
+  align-items: end;
+}
+
+.project-heading .project-num {
+  grid-column: 1;
+}
+
+.project-heading .project-title {
+  grid-column: 1;
+}
+
+.project-heading .project-desc {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.project-meta {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 24px;
+}
+
+.project-meta .project-build {
+  flex-basis: 100%;
+}
+
+.project-demo {
+  min-width: 0;
+}
+
+/* Holds the demo's space until its chunk arrives, so nothing below jumps */
+.project-demo-loading {
+  height: 563px;
+  border-radius: 14px;
+  background: #0c0e0f;
+  border: 1px solid #1d2324;
+}
+
+.project-build summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  list-style: none;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.project-build summary::-webkit-details-marker {
+  display: none;
+}
+
+.project-build summary::after {
+  content: '+';
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.project-build[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.project-build summary:hover {
+  color: var(--text-primary);
+}
+
+.project-build p {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 68ch;
+}
+
 /* Image column */
 .project-image {
   border-radius: 12px;
@@ -1231,6 +1325,33 @@ body {
   /* Image always below text on narrow viewports */
   .project-image {
     height: 260px;
+  }
+
+  .project-card--demo {
+    gap: 20px;
+  }
+
+  .project-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .project-heading .project-desc {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* The demo stacks its panes below about this width */
+@media (max-width: 767px) {
+  .project-demo-loading {
+    height: 740px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* The demo goes nearly edge to edge on phones: every pixel helps the graph */
+  .project-demo {
+    margin: 0 -8px;
   }
 }
 

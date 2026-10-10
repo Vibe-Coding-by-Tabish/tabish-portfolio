@@ -1,4 +1,8 @@
-import { motion, type Variants } from 'framer-motion';
+import { lazy, Suspense, useRef } from 'react';
+import { motion, useInView, type Variants } from 'framer-motion';
+
+// Each demo is its own chunk, fetched as the visitor scrolls toward it
+const GraphLMDemo = lazy(() => import('./demos/GraphLMDemo'));
 
 // ── Variants ──────────────────────────────────────────────────
 
@@ -46,6 +50,12 @@ const imageVariants: Variants = {
   },
 };
 
+// Demo cards: the demo rises in first, its text follows
+const riseVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+};
+
 // Tech tags: container staggers, each tag rises from below
 const tagListVariants: Variants = {
   hidden: {},
@@ -61,11 +71,15 @@ const tagVariants: Variants = {
 
 interface Project {
   id: string;
-  num: string;
   title: string;
-  description: string;
+  /** What it does and why it matters, in three lines at most */
+  story: string;
+  /** The longer account, behind "How it's built" */
+  build: string;
   tech: readonly string[];
-  image: string;
+  /** A live, interactive demo replaces the screenshot */
+  demo?: 'graphlm';
+  image?: string;
   github?: string;
   live?: string;
   youtube?: string;
@@ -76,45 +90,24 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
-    id: 'strixflow',
-    num: '01',
-    title: 'StrixFlow: Local-First Genomics Workflow Orchestration',
-    description:
-      'Orchestration platform that runs pipelines across five scientific workflow engines (Nextflow, Snakemake, CWL, WDL and custom Python) without rewriting them. Built for clinical and research institutions where genomic data cannot leave the building for legal or governance reasons. Recovers DAG structure through native engine introspection rather than a reimplemented parser, so the graph you see is the graph the engine actually executed. Validated by 395 unit tests plus Playwright end-to-end coverage.',
-    tech: ['Python', 'Nextflow', 'Snakemake', 'CWL', 'WDL', 'Playwright', 'ruff'],
-    image: '/projects/strixflow.webp',
-    // TODO: add the StrixFlow repo URL. Omitted rather than stubbed so no
-    // broken "GitHub" link renders in the meantime.
-  },
-  {
-    id: 'intergenix',
-    num: '02',
-    title: 'InterGenix: Clinical Healthcare Integration Service',
-    description:
-      'Healthcare interoperability service acting as the validation and orchestration layer alongside Mirth Connect. Parses and validates HL7 v2 messages through HAPI, exchanges data with a Medplum FHIR server, and polls OpenELIS for laboratory results. Reached full operational status in a production clinical pipeline.',
-    tech: ['Java 17', 'Spring Boot 3', 'HAPI HL7v2', 'FHIR / Medplum', 'Mirth Connect', 'OpenELIS'],
-    image: '/projects/intergenix.webp',
-    // TODO: confirm what you are permitted to disclose about this engagement,
-    // then set `note` (the spec's current safe phrasing is
-    // "A clinical genomics laboratory in the United States").
-  },
-  {
     id: 'graphlm',
-    num: '03',
     title: 'GraphLM: Knowledge-Graph-Augmented Retrieval',
-    description:
-      'Retrieval system combining RAG, vector search and knowledge graphs to support multi-hop contextual reasoning over unstructured research documents. Formed the basis of a published survey on knowledge graphs for intelligent document understanding.',
+    story:
+      'Ask a question and GraphLM answers from a knowledge graph and a vector index together, so it can connect facts that sit pages apart. The demo runs it on my resume: ask something, tap a node, untick the source.',
+    build:
+      'Documents and GitHub repositories are indexed into a dual store: entities and relationships go into Neo4j, text chunks into Qdrant, and retrieval combines vector search with graph traversal for multi-hop answers. FastAPI and PostgreSQL behind a React workspace, with answers streamed over server-sent events. Formed the basis of a published survey on knowledge graphs for intelligent document understanding.',
     tech: ['FastAPI', 'React', 'PostgreSQL', 'Neo4j', 'Qdrant'],
-    image: '/projects/graphlm.webp',
+    demo: 'graphlm',
     // TODO: add the GraphLM repo URL if the repo is public.
     doi: 'https://doi.org/10.22214/ijraset.2025.75390',
   },
   {
     id: 'adapt',
-    num: '04',
     title: 'ADAPT: Alzheimer\'s Disease Prediction System',
-    description:
-      'End-to-end MRI classification pipeline built on VGG-19, with DVC for data and model versioning and MLflow for experiment tracking, so any result can be traced back to the exact data and weights that produced it. Containerised with Docker; FastAPI backend and React frontend deployed to production.',
+    story:
+      'Classifies the stage of Alzheimer\'s disease from an MRI scan, and every prediction traces back to the exact data and model weights that produced it.',
+    build:
+      'End-to-end MRI classification pipeline built on VGG-19, with DVC for data and model versioning and MLflow for experiment tracking. Containerised with Docker; FastAPI backend on Google App Engine and React frontend on Netlify.',
     tech: ['Python', 'VGG-19', 'DVC', 'MLflow', 'Docker', 'FastAPI', 'React'],
     image: '/projects/adapt.webp',
     github: 'https://github.com/DA-workshop-101/Alzheimer-Stages-Classification-using-Deep-Learning',
@@ -123,16 +116,93 @@ const PROJECTS: Project[] = [
   },
   {
     id: 'metaboliq',
-    num: '05',
     title: 'MetaboliQ AI: Diabetes Risk Prediction',
-    description:
-      'ML platform for diabetes risk classification reaching approximately 83% accuracy across a full preprocessing, training and evaluation workflow. Led a team of four. Top 10 Finalist, Intel AI Hackathon, IEEE INDICON, IIT Kharagpur.',
+    story:
+      'Predicts diabetes risk at about 83% accuracy. I led a team of four to the Top 10 of the Intel AI Hackathon at IEEE INDICON, IIT Kharagpur.',
+    build:
+      'ML platform covering the full preprocessing, training and evaluation workflow in scikit-learn, served through a Flask app.',
     tech: ['Python', 'Scikit-learn', 'Flask'],
     image: '/projects/metaboliq.webp',
     github: 'https://github.com/tabishaliansari/MetaboliQ-AI',
     youtube: 'https://www.youtube.com/watch?v=sxvw4tzdTpY',
   },
 ];
+
+const DEMOS = { graphlm: GraphLMDemo } as const;
+
+// ── Pieces ────────────────────────────────────────────────────
+
+// Mounts the demo once the visitor is within a couple of screens of it, so
+// the home page doesn't download every demo up front
+function DemoSlot({ demo, title }: { demo: NonNullable<Project['demo']>; title: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const near = useInView(ref, { once: true, margin: '1200px 0px' });
+  const Demo = DEMOS[demo];
+  return (
+    <div ref={ref} className="project-demo" aria-label={`${title}: interactive demo`} role="region">
+      {near && (
+        <Suspense fallback={<div className="project-demo-loading" />}>
+          <Demo />
+        </Suspense>
+      )}
+      {!near && <div className="project-demo-loading" />}
+    </div>
+  );
+}
+
+function ProjectText({ project, num }: { project: Project; num: string }) {
+  return (
+    <>
+      <p className="project-num">{num}</p>
+      <h3 className="project-title">{project.title}</h3>
+      <p className="project-desc">{project.story}</p>
+    </>
+  );
+}
+
+function ProjectDetails({ project }: { project: Project }) {
+  return (
+    <>
+      <details className="project-build">
+        <summary>How it&rsquo;s built</summary>
+        <p>{project.build}</p>
+      </details>
+
+      <motion.ul className="project-tech" variants={tagListVariants}>
+        {project.tech.map(tag => (
+          <motion.li key={tag} className="tech-tag" variants={tagVariants}>
+            {tag}
+          </motion.li>
+        ))}
+      </motion.ul>
+
+      {project.note && <p className="project-note">{project.note}</p>}
+
+      <div className="project-links">
+        {project.github && (
+          <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-link">
+            GitHub ↗
+          </a>
+        )}
+        {project.live && (
+          <a href={project.live} target="_blank" rel="noopener noreferrer" className="project-link">
+            Live ↗
+          </a>
+        )}
+        {project.youtube && (
+          <a href={project.youtube} target="_blank" rel="noopener noreferrer" className="project-link">
+            YouTube ↗
+          </a>
+        )}
+        {project.doi && (
+          <a href={project.doi} target="_blank" rel="noopener noreferrer" className="project-link">
+            Paper ↗
+          </a>
+        )}
+      </div>
+    </>
+  );
+}
 
 // ── Component ─────────────────────────────────────────────────
 
@@ -154,90 +224,47 @@ export default function Projects() {
         </motion.header>
 
         <div className="projects-list">
-          {PROJECTS.map((project) => (
-            <motion.article
-              key={project.id}
-              className="project-card"
-              variants={cardVariants}
-              whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
-            >
-              {/* Text — left side, appears first */}
-              <motion.div className="project-text" variants={textVariants}>
-                <p className="project-num">{project.num}</p>
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-desc">{project.description}</p>
+          {PROJECTS.map((project, i) => {
+            const num = String(i + 1).padStart(2, '0');
 
-                <motion.ul
-                  className="project-tech"
-                  variants={tagListVariants}
-                >
-                  {project.tech.map(tag => (
-                    <motion.li key={tag} className="tech-tag" variants={tagVariants}>
-                      {tag}
-                    </motion.li>
-                  ))}
-                </motion.ul>
+            // Demo first: the product is the headline, the text supports it
+            if (project.demo) {
+              return (
+                <motion.article key={project.id} id={project.id} className="project-card project-card--demo" variants={cardVariants}>
+                  <motion.div className="project-heading" variants={riseVariants}>
+                    <ProjectText project={project} num={num} />
+                  </motion.div>
+                  <motion.div variants={riseVariants}>
+                    <DemoSlot demo={project.demo} title={project.title} />
+                  </motion.div>
+                  <motion.div className="project-text project-meta" variants={riseVariants}>
+                    <ProjectDetails project={project} />
+                  </motion.div>
+                </motion.article>
+              );
+            }
 
-                {project.note && <p className="project-note">{project.note}</p>}
-
-                <div className="project-links">
-                  {project.github && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-link"
-                    >
-                      GitHub ↗
-                    </a>
-                  )}
-                  {project.live && (
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-link"
-                    >
-                      Live ↗
-                    </a>
-                  )}
-                  {project.youtube && (
-                    <a
-                      href={project.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-link"
-                    >
-                      YouTube ↗
-                    </a>
-                  )}
-                  {project.doi && (
-                    <a
-                      href={project.doi}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-link"
-                    >
-                      Paper ↗
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-
-              {/* Image — right side, follows text by 0.15s */}
-              <motion.div
-                className="project-image"
-                variants={imageVariants}
+            return (
+              <motion.article
+                key={project.id}
+                id={project.id}
+                className="project-card"
+                variants={cardVariants}
+                whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
               >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </motion.div>
-            </motion.article>
-          ))}
+                {/* Text — left side, appears first */}
+                <motion.div className="project-text" variants={textVariants}>
+                  <ProjectText project={project} num={num} />
+                  <ProjectDetails project={project} />
+                </motion.div>
+
+                {/* Image — right side, follows text by 0.15s */}
+                <motion.div className="project-image" variants={imageVariants}>
+                  <img src={project.image} alt={project.title} loading="lazy" decoding="async" />
+                </motion.div>
+              </motion.article>
+            );
+          })}
         </div>
 
       </div>
