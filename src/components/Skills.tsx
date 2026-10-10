@@ -140,9 +140,20 @@ export default function Skills({ onViewResume, onNavigateHome }: SkillsProps) {
     if (id === selected) return;
     setDir(indexOf(id) >= indexOf(selected) ? 1 : -1);
     history.pushState(null, '', id ? `/skills#${id}` : '/skills');
+    const from = selected;
     setSelected(id);
-    // Bring the new option's opening line up under the sticky switcher
     requestAnimationFrame(() => {
+      // The control just used (a tile, "All skill areas", "Next") is gone
+      // from the new view; keep keyboard focus on its counterpart instead of
+      // letting it fall back to the top of the page
+      if (!document.activeElement || document.activeElement === document.body) {
+        const target = id
+          ? document.querySelector<HTMLElement>(`.sk-seg[data-option="${id}"]`)
+          : document.querySelector<HTMLElement>(`.sk-tile[data-option="${from}"]`);
+        target?.focus({ preventScroll: true });
+      }
+
+      // Bring the new option's opening line up under the sticky switcher
       const anchor = anchorRef.current;
       if (!anchor) return;
       const top = anchor.getBoundingClientRect().top + window.scrollY - 150;
