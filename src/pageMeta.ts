@@ -19,9 +19,9 @@ export const PAGE_META = {
   },
   skills: {
     path: '/skills',
-    title: 'Software, Data & AI/ML Engineer | Tabish Ali Ansari',
+    title: 'Nextflow, Software, AI & FHIR Engineer | Tabish Ali Ansari',
     description:
-      'Tabish Ali Ansari in software, data engineering, data science and AI/ML: FastAPI and Spring Boot APIs, 100–300 GB data pipelines, MLOps and RAG systems.',
+      'Engineer and consultant in Pune: Nextflow bioinformatics pipelines on AWS, production backends, AI and data engineering, and HL7 v2 / FHIR health data integration.',
   },
   resume: {
     path: '/resume',

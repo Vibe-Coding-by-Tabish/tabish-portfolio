@@ -55,7 +55,7 @@ test('resume HTML is served with resume-specific metadata, not the home page tag
 
 test('skills HTML is served with skills-specific metadata', async ({ request }) => {
   const html = await headOf(request, '/skills');
-  expect(html).toContain('<title>Software, Data &amp; AI/ML Engineer | Tabish Ali Ansari</title>');
+  expect(html).toContain('<title>Nextflow, Software, AI &amp; FHIR Engineer | Tabish Ali Ansari</title>');
   expect(html).toContain('<link rel="canonical" href="https://tabishaliansari.vercel.app/skills"');
 });
 

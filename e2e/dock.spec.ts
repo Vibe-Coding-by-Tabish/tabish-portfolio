@@ -157,9 +157,9 @@ test('Home from further down the home page scrolls back to the top', async ({ pa
 });
 
 test('Home from the skills page goes to the top of the home page', async ({ page }) => {
-  await page.goto('/skills');
+  await page.goto('/skills#software-engineering');
   await page.evaluate(() => document.fonts.ready);
-  await page.locator('#data-science').evaluate(el => el.scrollIntoView());
+  await page.locator('.sk-stage .sk-proof').evaluate(el => el.scrollIntoView());
   await expect(labelled(page, 'Skills')).toHaveAttribute('aria-current', 'location');
   await dock(page).locator('.dock-item.is-dot').first().click();
   await labelled(page, 'Home').click();
