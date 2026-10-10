@@ -65,7 +65,7 @@ export const OPTIONS: SkillOption[] = [
     short: 'Software',
     talk: 'your software',
     blurb: 'FastAPI services, secured and shipped to production.',
-    headline: { value: '1', label: 'command, down from 3 hours' },
+    headline: { value: '1', label: 'command, not 3 hours' },
     statement: 'Typed. Secured. Shipped.',
     sub: 'FastAPI services with validated contracts and machine-to-machine auth, shipped by a script that turned three hours of setup into one command.',
     stats: [

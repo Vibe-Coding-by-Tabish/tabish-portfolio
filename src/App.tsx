@@ -95,6 +95,12 @@ export default function App() {
     setPage(to);
   };
 
+  // Straight to one option on the Skills page (it reads the hash on mount)
+  const openSkill = (id: string) => {
+    window.history.pushState(null, '', `${PAGE_META.skills.path}#${id}`);
+    setPage('skills');
+  };
+
   // From a page without the home sections: go home, then jump to the requested section (or the top)
   const goHome = (section?: string) => {
     pendingSection.current = section ?? 'top';
@@ -179,7 +185,7 @@ export default function App() {
           >
             <Header theme={theme} onToggleTheme={toggleTheme} onViewResume={() => navigate('resume')} />
             <div style={{ paddingTop: 64 }}>
-              <Hero />
+              <Hero onOpenSkill={openSkill} />
               <Projects />
               <Timeline />
               <Publications />

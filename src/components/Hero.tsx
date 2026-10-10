@@ -5,6 +5,8 @@ import {
 } from 'framer-motion';
 import { FaLinkedin, FaGithub, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import { OPTIONS, type OptionId } from './skills/data';
+import Glyph from './skills/Glyph';
 
 // ── Animation Variants ────────────────────────────────────────
 
@@ -23,18 +25,18 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
 };
 
-const highlightList: Variants = {
+const skillList: Variants = {
   hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut', when: 'beforeChildren', staggerChildren: 0.08 },
+    transition: { duration: 0.5, ease: 'easeOut', when: 'beforeChildren', staggerChildren: 0.07 },
   },
 };
 
-const highlightItem: Variants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.35, ease: 'easeOut' } },
+const skillItem: Variants = {
+  hidden: { opacity: 0, y: 8, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', bounce: 0.3, duration: 0.5 } },
 };
 
 // ── Image Stack Logic ─────────────────────────────────────────
@@ -194,18 +196,19 @@ function StackCard({ src, alt, index, slot, frontDragX, reduceMotion, onDragStar
   );
 }
 
-// ── Data ──────────────────────────────────────────────────────
-
-const HIGHLIGHTS = [
-  'Maintain a regulated clinical variant review platform across 5 environments for a US genomics laboratory',
-  'Built InterGenix: HL7 v2, FHIR and OpenELIS integration for clinical data exchange',
-  'StrixFlow: open-source orchestration across 5 workflow engines, 395 tests',
-  'Top 10 All India, Intel AI Hackathon @ IEEE INDICON, IIT Kharagpur',
-] as const;
+// Let modified clicks (new tab / window) fall through to the real href
+const isPlainClick = (e: React.MouseEvent) =>
+  e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 
 // ── Component ─────────────────────────────────────────────────
 
-export default function Hero() {
+interface HeroProps {
+  // Opens the Skills page on one option; Skills is the one page the home
+  // page can't scroll to, so the hero introduces it
+  onOpenSkill: (id: OptionId) => void;
+}
+
+export default function Hero({ onOpenSkill }: HeroProps) {
   const prefersReducedMotion = useReducedMotion();
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -275,18 +278,34 @@ export default function Hero() {
             <p>Health Data Infrastructure · Workflow Orchestration · Data Engineering · Machine Learning</p>
           </motion.div>
 
-          <motion.p className="hero-description" variants={fadeUp}>
-            End-to-End Product Development
-          </motion.p>
-
-          <motion.ul className="hero-highlights" variants={highlightList}>
-            {HIGHLIGHTS.map((text, i) => (
-              <motion.li key={text} variants={highlightItem}>
-                <span className="highlight-num">0{i + 1}</span>
-                <span className="highlight-text">{text}</span>
-              </motion.li>
-            ))}
-          </motion.ul>
+          {/* A doorway to the Skills page, one option per pill */}
+          <motion.nav className="hero-skills" aria-labelledby="hero-skills-title" variants={skillList}>
+            <p id="hero-skills-title" className="hero-skills-title">What are you looking for?</p>
+            <ul className="hero-skills-list">
+              {OPTIONS.map(o => (
+                <motion.li key={o.id} variants={skillItem}>
+                  <a
+                    href={`/skills#${o.id}`}
+                    className="hero-skill"
+                    data-option={o.id}
+                    aria-label={`${o.name}: ${o.headline.value} ${o.headline.label}`}
+                    onClick={e => {
+                      if (!isPlainClick(e)) return;
+                      e.preventDefault();
+                      onOpenSkill(o.id);
+                    }}
+                  >
+                    <span className="sk-seg-icon hero-skill-icon" aria-hidden="true"><Glyph id={o.id} /></span>
+                    <span className="hero-skill-text">
+                      <span className="hero-skill-name">{o.short}</span>
+                      <span className="hero-skill-stat">{o.headline.value} {o.headline.label}</span>
+                    </span>
+                    <span className="hero-skill-arrow" aria-hidden="true">→</span>
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.nav>
 
           {/* The floating dock steps aside rather than cover these (Dock.tsx) */}
           <motion.div className="hero-cta" variants={fadeUp} data-dock-avoid>
