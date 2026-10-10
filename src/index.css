@@ -705,6 +705,12 @@ body {
   border-color: #dedde8;
 }
 
+.project-demo-loading--metaboliq {
+  height: 431px;
+  background: #e6f2fb;
+  border-color: #cddff0;
+}
+
 .project-build summary {
   display: inline-flex;
   align-items: center;
@@ -1355,6 +1361,10 @@ body {
 
   .project-demo-loading.project-demo-loading--adapt {
     height: 740px;
+  }
+
+  .project-demo-loading.project-demo-loading--metaboliq {
+    height: 762px;
   }
 }
 

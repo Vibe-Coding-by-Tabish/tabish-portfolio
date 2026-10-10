@@ -1,0 +1,469 @@
+/* ── MetaboliQ AI demo ─────────────────────────────────────────
+   MetaboliQ's own look: the bright medical blue header with its cream
+   "Go sweet, not sugar" line, pale blue page, white form cards and the blue
+   Predict button. Light in both site themes. Layout follows the demo's width:
+   form beside the result when there is room, stacked when not. */
+
+.mq {
+  --mq-blue: #1677c9;
+  --mq-blue-deep: #0d5a9e;
+  --mq-blue-ink: #1f3f8f;
+  --mq-page: #e6f2fb;
+  --mq-card: #ffffff;
+  --mq-line: #d8e6f2;
+  --mq-text: #17283d;
+  --mq-dim: #52667d;
+  --mq-faint: #8496a9;
+  --mq-cream: #f6e7bd;
+  --mq-red: #d43c3c;
+  --mq-green: #1f9d55;
+
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--mq-page);
+  color: var(--mq-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #cddff0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(13, 40, 80, 0.06), 0 18px 50px -14px rgba(13, 90, 158, 0.3);
+  text-align: left;
+}
+
+[data-theme='dark'] .mq {
+  border-color: #233446;
+  box-shadow: 0 18px 60px -10px rgba(0, 0, 0, 0.75);
+}
+
+.mq button {
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mq :focus-visible {
+  outline: 2px solid var(--mq-blue-deep);
+  outline-offset: 2px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+
+.mq-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--mq-blue);
+  color: #fff;
+  min-width: 0;
+}
+
+/* The glucometer badge, drawn: a ringed disc with a red cross */
+.mq-logo {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #dcecf8;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 2px #7fb3dd;
+  display: grid;
+  place-items: center;
+}
+
+.mq-logo i {
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(var(--mq-red), var(--mq-red)) center / 4px 100% no-repeat,
+    linear-gradient(var(--mq-red), var(--mq-red)) center / 100% 4px no-repeat;
+}
+
+.mq-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.mq-brand b {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.mq-brand span {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mq-cream);
+}
+
+.mq-badge {
+  margin-left: auto;
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.mq-badge-short {
+  display: none;
+}
+
+/* ── Predictor tabs: the app's four hero buttons ─────────────── */
+
+.mq-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--mq-blue-deep);
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.mq-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.mq-tab {
+  flex: none;
+  border: 0;
+  border-radius: 7px;
+  padding: 8px 14px;
+  min-height: 38px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+  transition: background-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.mq-tab:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.mq-tab.is-active {
+  background: #ffffff;
+  color: var(--mq-blue-deep);
+  font-weight: 600;
+}
+
+.mq-tab:active {
+  transform: scale(0.96);
+}
+
+/* ── Body (stacked by default) ──────────────────────────────── */
+
+.mq-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+}
+
+.mq-form,
+.mq-result {
+  min-width: 0;
+  background: var(--mq-card);
+  border: 1px solid var(--mq-line);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.mq-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mq-form-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mq-form-head h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--mq-blue-ink);
+}
+
+.mq-recorded {
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mq-faint);
+}
+
+.mq-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mq-fields.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.mq-field {
+  min-width: 0;
+}
+
+.mq-field dt {
+  font-size: 11.5px;
+  color: #3c63a8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.mq-field dd {
+  font-size: 13.5px;
+  border: 1px solid #d2deea;
+  border-radius: 6px;
+  padding: 6px 9px;
+  min-height: 34px;
+  background: #fbfdff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.25s, background-color 0.25s;
+}
+
+.mq-field.is-filled dd {
+  border-color: #a9c7e6;
+  background: #ffffff;
+}
+
+.mq-placeholder {
+  color: #c2cfdc;
+}
+
+.mq-more {
+  align-self: flex-start;
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mq-blue);
+}
+
+.mq-more:hover {
+  text-decoration: underline;
+}
+
+.mq-predict {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 7px;
+  background: #2457d6;
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.15s, background-color 0.2s, opacity 0.2s;
+}
+
+.mq-predict:hover {
+  background: #1c47b3;
+}
+
+.mq-predict:active,
+.mq-predict.is-pressing {
+  transform: scale(0.97);
+}
+
+.mq-predict:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.mq-spinner {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: mq-spin 0.8s linear infinite;
+}
+
+@keyframes mq-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Result ─────────────────────────────────────────────────── */
+
+.mq-result {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mq-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mq-faint);
+}
+
+.mq-waiting {
+  min-height: 92px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 13px;
+  color: var(--mq-faint);
+  border: 1px dashed #c9d9e9;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.mq-verdict {
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.mq-verdict-lead {
+  font-size: 12.5px;
+  color: var(--mq-dim);
+}
+
+.mq-verdict-value {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+.mq-verdict.is-alert {
+  background: #fdeeee;
+}
+
+.mq-verdict.is-alert .mq-verdict-value {
+  color: #b42424;
+}
+
+.mq-verdict.is-clear {
+  background: #e9f7ef;
+}
+
+.mq-verdict.is-clear .mq-verdict-value {
+  color: var(--mq-green);
+}
+
+.mq-verdict.is-info {
+  background: #eaf2fd;
+}
+
+.mq-verdict.is-info .mq-verdict-value {
+  color: var(--mq-blue-ink);
+}
+
+.mq-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.mq-meta div {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+}
+
+.mq-meta dt {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mq-faint);
+}
+
+.mq-meta dd {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.mq-foot {
+  font-size: 11.5px;
+  color: var(--mq-faint);
+  text-align: center;
+  padding: 0 14px 12px;
+}
+
+/* ── Wide: form beside the result ───────────────────────────── */
+
+@container (min-width: 720px) {
+  .mq-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .mq-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mq-tabs {
+    padding: 10px 18px;
+  }
+
+  .mq-result {
+    position: sticky;
+    top: 0;
+  }
+
+  .mq-waiting,
+  .mq-verdict {
+    min-height: 130px;
+  }
+
+  .mq-verdict-value {
+    font-size: 22px;
+  }
+}
+
+@container (max-width: 520px) {
+  .mq-badge-long {
+    display: none;
+  }
+
+  .mq-badge-short {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mq-spinner {
+    animation: none;
+  }
+}

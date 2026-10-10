@@ -5,6 +5,7 @@ import {
   ANSWERS, EDGES, NODES, SOURCE, answerById, routeQuestion,
   type Answer, type GraphNode, type QuestionId,
 } from './graphlmData';
+import { useTimers } from './useTimers';
 import './graphlm.css';
 
 // A static replica of GraphLM's chat + graph workspace, grounded in my resume.
@@ -32,22 +33,6 @@ interface Turn {
 }
 
 const wordCount = (a: Answer) => a.paragraphs.join(' ').split(' ').length;
-
-// ── Timers ────────────────────────────────────────────────────
-
-// A bucket of timeouts that can be cancelled together
-function useTimers() {
-  const ids = useRef<number[]>([]);
-  const clear = useCallback(() => {
-    ids.current.forEach(window.clearTimeout);
-    ids.current = [];
-  }, []);
-  const after = useCallback((ms: number, fn: () => void) => {
-    ids.current.push(window.setTimeout(fn, ms));
-  }, []);
-  useEffect(() => clear, [clear]);
-  return { after, clear };
-}
 
 // ── Graph ─────────────────────────────────────────────────────
 

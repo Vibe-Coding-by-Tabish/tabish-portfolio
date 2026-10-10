@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
 import { useSettledInView } from './useSettledInView';
+import { useTimers } from './useTimers';
 import './adapt.css';
 
 // A static replica of ADAPT's classifier page. The scan, the prediction and
@@ -24,19 +25,6 @@ const STEPS = ['Resize to 224 × 224', 'VGG-19 forward pass', 'Softmax over 4 st
 const STEP_MS = 520;
 
 type Phase = 'empty' | 'loaded' | 'analyzing' | 'done';
-
-function useTimers() {
-  const ids = useRef<number[]>([]);
-  const clear = useCallback(() => {
-    ids.current.forEach(window.clearTimeout);
-    ids.current = [];
-  }, []);
-  const after = useCallback((ms: number, fn: () => void) => {
-    ids.current.push(window.setTimeout(fn, ms));
-  }, []);
-  useEffect(() => clear, [clear]);
-  return { after, clear };
-}
 
 // ── Before / after comparison ─────────────────────────────────
 

@@ -4,6 +4,7 @@ import { motion, useInView, type Variants } from 'framer-motion';
 // Each demo is its own chunk, fetched as the visitor scrolls toward it
 const GraphLMDemo = lazy(() => import('./demos/GraphLMDemo'));
 const ADAPTDemo = lazy(() => import('./demos/ADAPTDemo'));
+const MetaboliQDemo = lazy(() => import('./demos/MetaboliQDemo'));
 
 // ── Variants ──────────────────────────────────────────────────
 
@@ -79,7 +80,7 @@ interface Project {
   build: string;
   tech: readonly string[];
   /** A live, interactive demo replaces the screenshot */
-  demo?: 'graphlm' | 'adapt';
+  demo?: 'graphlm' | 'adapt' | 'metaboliq';
   image?: string;
   github?: string;
   live?: string;
@@ -119,17 +120,17 @@ const PROJECTS: Project[] = [
     id: 'metaboliq',
     title: 'MetaboliQ AI: Diabetes Risk Prediction',
     story:
-      'Predicts diabetes risk at about 83% accuracy. I led a team of four to the Top 10 of the Intel AI Hackathon at IEEE INDICON, IIT Kharagpur.',
+      'Four predictors behind one app: gestational diabetes, lifestyle risk, diabetes type and a projection of case numbers. The demo replays a real run of each. I led a team of four to the Top 10 of the Intel AI Hackathon at IEEE INDICON, IIT Kharagpur.',
     build:
-      'ML platform covering the full preprocessing, training and evaluation workflow in scikit-learn, served through a Flask app.',
-    tech: ['Python', 'Scikit-learn', 'Flask'],
-    image: '/projects/metaboliq.webp',
+      'Decision Trees for lifestyle risk and gestational diabetes, a Random Forest for the type of diabetes and linear regression for projecting cases, each with its own preprocessing, training and evaluation, reaching about 83% accuracy. Training and inference run on Intel’s oneDAL extension for scikit-learn; a Flask app serves the models alongside an NLP chatbot built on Hugging Face Transformers.',
+    tech: ['Python', 'Scikit-learn', 'Intel oneDAL', 'Flask'],
+    demo: 'metaboliq',
     github: 'https://github.com/tabishaliansari/MetaboliQ-AI',
     youtube: 'https://www.youtube.com/watch?v=sxvw4tzdTpY',
   },
 ];
 
-const DEMOS = { graphlm: GraphLMDemo, adapt: ADAPTDemo } as const;
+const DEMOS = { graphlm: GraphLMDemo, adapt: ADAPTDemo, metaboliq: MetaboliQDemo } as const;
 
 // ── Pieces ────────────────────────────────────────────────────
 
