@@ -12,6 +12,7 @@
     "test": "playwright test"
   },
   "dependencies": {
+    "@microsoft/clarity": "^1.0.2",
     "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.38.0",
     "react": "^19.2.4",
